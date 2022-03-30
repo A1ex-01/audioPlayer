@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "",
+  "enablePullDownRefresh": false,
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "title-bar": "/components/TitleBar/TitleBar",
+    "music-ui": "/components/music-ui/music-ui",
+    "music-chapter": "/components/MusicChapter/MusicChapter"
+  }
+}

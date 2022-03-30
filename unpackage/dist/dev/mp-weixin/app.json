@@ -1,0 +1,36 @@
+{
+    "pages": [
+        "pages/home-music/home-music",
+        "pages/home-video/home-video",
+        "pages/video-detail/video-detail",
+        "pages/music-toplist/music-toplist",
+        "pages/music-search/music-search",
+        "pages/music-player/music-player"
+    ],
+    "subPackages": [],
+    "requiredBackgroundModes": ["audio"],
+    "window": {
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "uni-app",
+        "navigationBarBackgroundColor": "#F8F8F8",
+        "backgroundColor": "#F8F8F8"
+    },
+    "tabBar": {
+        "list": [
+            {
+                "pagePath": "pages/home-music/home-music",
+                "iconPath": "static/imgs/tabbar/music_normal.png",
+                "selectedIconPath": "static/imgs/tabbar/music_active.png",
+                "text": "音乐"
+            },
+            {
+                "pagePath": "pages/home-video/home-video",
+                "iconPath": "static/imgs/tabbar/video_normal.png",
+                "selectedIconPath": "static/imgs/tabbar/video_active.png",
+                "text": "视频"
+            }
+        ]
+    },
+    "usingComponents": {},
+    "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "title-card": "/components/TitleCard/TitleCard",
+    "hot-card": "/components/HotCard/HotCard"
+  }
+}

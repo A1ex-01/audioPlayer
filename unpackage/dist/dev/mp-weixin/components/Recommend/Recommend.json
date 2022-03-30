@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "title-card": "/components/TitleCard/TitleCard",
+    "song-card": "/components/SongCard/SongCard"
+  },
+  "component": true
+}

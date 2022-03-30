@@ -1,0 +1,1 @@
+<view class="title data-v-2d53bbd4"><slot></slot><view class="more data-v-2d53bbd4"><text data-event-opts="{{[['tap',[['goSongTopList',['$event']]]]]}}" style="margin-left:10rpx;" bindtap="__e" class="data-v-2d53bbd4">更多</text><image style="width:30rpx;height:30rpx;" src="../../static/imgs/icons/arrow-right.png" class="data-v-2d53bbd4"></image></view></view>

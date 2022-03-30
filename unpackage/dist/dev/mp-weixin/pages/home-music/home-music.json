@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "u-search": "/uni_modules/uview-ui/components/u-search/u-search",
+    "recommend": "/components/Recommend/Recommend",
+    "hot-list": "/components/HotList/HotList",
+    "recommendsong": "/components/Recommendsong/Recommendsong",
+    "band-card": "/components/BandCard/BandCard"
+  }
+}

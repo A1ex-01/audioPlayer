@@ -1,0 +1,1 @@
+<view data-event-opts="{{[['tap',[['goSongMeau',['$0'],['hotList.id']]]]]}}" class="warp data-v-f8410080" bindtap="__e"><view class="img data-v-f8410080"><image class="image data-v-f8410080" src="{{hotList.coverImgUrl}}" mode></image></view><text class="name data-v-f8410080">{{hotList.name}}</text></view>

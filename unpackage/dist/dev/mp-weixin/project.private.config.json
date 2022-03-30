@@ -1,0 +1,48 @@
+{
+    "setting": {},
+    "condition": {
+        "plugin": {
+            "list": []
+        },
+        "game": {
+            "list": []
+        },
+        "gamePlugin": {
+            "list": []
+        },
+        "miniprogram": {
+            "list": [
+                {
+                    "name": "video-detail",
+                    "pathName": "pages/video-detail/video-detail",
+                    "query": "id=14505109",
+                    "scene": null
+                },
+                {
+                    "name": "toplist",
+                    "pathName": "pages/music-toplist/music-toplist",
+                    "query": "idx=1",
+                    "scene": null
+                },
+                {
+                    "name": "song-meau-detail",
+                    "pathName": "pages/music-toplist/music-toplist",
+                    "query": "meauId=5172410111",
+                    "scene": null
+                },
+                {
+                    "name": "search",
+                    "pathName": "pages/music-search/music-search",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "name": "song-ui",
+                    "pathName": "pages/music-player/music-player",
+                    "query": "ids=1929391639",
+                    "scene": null
+                }
+            ]
+        }
+    }
+}

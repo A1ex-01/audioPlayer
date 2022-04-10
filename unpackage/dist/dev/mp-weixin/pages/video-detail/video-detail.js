@@ -96,7 +96,7 @@ var components
 try {
   components = {
     VdItem: function() {
-      return __webpack_require__.e(/*! import() | components/VdItem/VdItem */ "components/VdItem/VdItem").then(__webpack_require__.bind(null, /*! @/components/VdItem/VdItem.vue */ 235))
+      return __webpack_require__.e(/*! import() | components/VdItem/VdItem */ "components/VdItem/VdItem").then(__webpack_require__.bind(null, /*! @/components/VdItem/VdItem.vue */ 237))
     }
   }
 } catch (e) {
@@ -162,35 +162,30 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 13));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var _api = __webpack_require__(/*! ../../utils/api.js */ 18);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}var _default =
-
-
-
-
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 13));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};} //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default =
 {
   data: function data() {
     return {
@@ -212,18 +207,43 @@ var _api = __webpack_require__(/*! ../../utils/api.js */ 18);function _interopRe
     this.getRelated();
   },
   methods: {
-    getMvAddr: function getMvAddr() {var _this = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {var _yield$getMvAddrById, data;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:_context.next = 2;return (
-                  (0, _api.getMvAddrById)(_this.id));case 2:_yield$getMvAddrById = _context.sent;data = _yield$getMvAddrById.data;
-                _this.addr = data;case 5:case "end":return _context.stop();}}}, _callee);}))();
+    getMvAddr: function getMvAddr() {var _this = this;
+      // const { data } = await getMvAddrById(this.id);
+      // console.log("addrinfo",data);
+      uni.request({
+        url: "https://axplayer-node.vercel.app/mv/url?id=" + this.id,
+        success: function success(res) {
+          // console.log("node",res)
+          _this.addr = res.data.data;
+        } });
+
+      // this.addr = data;
     },
-    getMvDetail: function getMvDetail() {var _this2 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee2() {var _yield$getMvDetailByI, data;return _regenerator.default.wrap(function _callee2$(_context2) {while (1) {switch (_context2.prev = _context2.next) {case 0:_context2.next = 2;return (
-                  (0, _api.getMvDetailById)(_this2.id));case 2:_yield$getMvDetailByI = _context2.sent;data = _yield$getMvDetailByI.data;
-                _this2.detail = data;case 5:case "end":return _context2.stop();}}}, _callee2);}))();
-    },
-    getRelated: function getRelated() {var _this3 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee3() {var _yield$getRelatedVide, data;return _regenerator.default.wrap(function _callee3$(_context3) {while (1) {switch (_context3.prev = _context3.next) {case 0:_context3.next = 2;return (
-                  (0, _api.getRelatedVideo)(_this3.id));case 2:_yield$getRelatedVide = _context3.sent;data = _yield$getRelatedVide.data;
-                _this3.relate = data;case 5:case "end":return _context3.stop();}}}, _callee3);}))();
-    } } };exports.default = _default;
+    getMvDetail: function getMvDetail() {var _this2 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:
+                // const { data } = await getMvDetailById(this.id);
+                // console.log("base",data);
+                uni.request({
+                  url: "https://axplayer-node.vercel.app/mv/detail?mvid=" + _this2.id,
+                  success: function success(res) {
+                    // console.log("node",res)
+                    _this2.detail = res.data.data;
+                  } });
+
+                // this.detail = data;
+              case 1:case "end":return _context.stop();}}}, _callee);}))();},
+    getRelated: function getRelated() {var _this3 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee2() {return _regenerator.default.wrap(function _callee2$(_context2) {while (1) {switch (_context2.prev = _context2.next) {case 0:
+                // const { data } = await getRelatedVideo(this.id);
+                // console.log("base",data)
+                uni.request({
+                  url: "https://axplayer-node.vercel.app/related/allvideo?id=" + _this3.id,
+                  success: function success(res) {
+                    // console.log(res.data.data);
+                    _this3.relate = res.data.data;
+                  } });
+
+                // this.relate = data;
+              case 1:case "end":return _context2.stop();}}}, _callee2);}))();} } };exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 

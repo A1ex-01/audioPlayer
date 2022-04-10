@@ -67,19 +67,19 @@ function getSeatchMeauo(arr) {
 	return _request("/song/detail?ids=" + arr.toString(), "get")
 }
 export {
-	getMovieList,
-	getMvAddrById,
-	getMvDetailById,
-	getRelatedVideo,
-	getBanner,
-	getrecommend,
-	getHotList,
-	getRemmendList,
-	getSongMeauDetailById,
-	getHotSearchTag,
-	getSearchResult,
-	getSearchContent,
-	getSongDetailInfo,
-	getSongLyric,
-	getSeatchMeauo
+	// getMovieList,
+	// getMvAddrById,
+	// getMvDetailById,
+	// getRelatedVideo,
+	// getBanner,
+	// getrecommend,
+	// getHotList,
+	// getRemmendList,
+	// getSongMeauDetailById,
+	// getHotSearchTag,
+	// getSearchResult,
+	// getSearchContent,
+	// getSongDetailInfo,
+	// getSongLyric,
+	// getSeatchMeauo
 }

@@ -96,7 +96,7 @@ var components
 try {
   components = {
     MvItem: function() {
-      return __webpack_require__.e(/*! import() | components/MvItem/MvItem */ "components/MvItem/MvItem").then(__webpack_require__.bind(null, /*! @/components/MvItem/MvItem.vue */ 228))
+      return __webpack_require__.e(/*! import() | components/MvItem/MvItem */ "components/MvItem/MvItem").then(__webpack_require__.bind(null, /*! @/components/MvItem/MvItem.vue */ 230))
     }
   }
 } catch (e) {
@@ -153,26 +153,26 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 13));
+/* WEBPACK VAR INJECTION */(function(uniCloud, uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var _api = __webpack_require__(/*! ../../utils/api.js */ 18);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}var _default =
-{
+// import { getMovieList } from "../../utils/api.js";
+var _default = {
   data: function data() {
     return {
       mvList: null,
@@ -185,38 +185,57 @@ var _api = __webpack_require__(/*! ../../utils/api.js */ 18);function _interopRe
   },
   methods: {
     // 初始化列表
-    getInitList: function getInitList() {var _this = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {var _yield$getMovieList, data;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:_context.next = 2;return (
-                  (0, _api.getMovieList)(0));case 2:_yield$getMovieList = _context.sent;data = _yield$getMovieList.data;
-                _this.mvList = data;
-                console.log(_this.mvList);case 6:case "end":return _context.stop();}}}, _callee);}))();
+    getInitList: function getInitList() {var _this = this;
+      uniCloud.callFunction({
+        name: "getMovieList",
+        data: {
+          page: this.page },
+
+        success: function success(res) {
+          // this.mvList = res.result.data;
+          _this.mvList = res.result.data;
+        } });
+
+      // const { data } = await getMovieList(0);
     },
 
     // 下拉获取列表
-    getListByPage: function getListByPage() {var _this2 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee2() {var _yield$getMovieList2, data, hasMore;return _regenerator.default.wrap(function _callee2$(_context2) {while (1) {switch (_context2.prev = _context2.next) {case 0:if (!
-                _this2.allowPull) {_context2.next = 10;break;}_context2.next = 3;return (
-                  (0, _api.getMovieList)((_this2.page - 1) * 10));case 3:_yield$getMovieList2 = _context2.sent;data = _yield$getMovieList2.data;hasMore = _yield$getMovieList2.hasMore;if (
-                hasMore) {_context2.next = 9;break;}
-                _this2.allowPull = false;return _context2.abrupt("return");case 9:
+    getListByPage: function getListByPage() {var _this2 = this;
+      if (this.allowPull) {
+        // const { data, hasMore } = await getMovieList((this.page - 1) * 10);
+        uniCloud.callFunction({
+          name: "getMovieList",
+          data: {
+            page: this.page },
 
+          success: function success(res) {
+            _this2.mvList = _this2.mvList.concat(res.result.data);
+          } });
 
-                _this2.mvList = _this2.mvList.concat(data);case 10:case "end":return _context2.stop();}}}, _callee2);}))();
-
+        // if (!hasMore) {
+        //   this.allowPull = false;
+        //   return;
+        // }
+        // this.mvList = this.mvList.concat(data);
+      }
     },
 
     // 触底行为
     scrolltolower: function scrolltolower() {
-      this.page++;
-      this.getListByPage();
+      if (this.page <= 5) {
+        this.page++;
+        this.getListByPage();
+      } else {
+        this.allowPull = false;
+      }
     },
-
     // 跳转至视屏详情页
     goVideoDetail: function goVideoDetail(val) {
-      console.log(val);
       uni.navigateTo({
         url: "../video-detail/video-detail?id=" + val });
 
     } } };exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/uni-cloud/dist/index.js */ 148)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 

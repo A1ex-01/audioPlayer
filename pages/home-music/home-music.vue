@@ -1,5 +1,5 @@
 <template>
-  <view class="music">
+  <view class="music" v-if="swiperList&&recommendList">
     <view class="search" @click="goSearch">
       <u-search
         disabled
@@ -55,12 +55,12 @@
 <script>
 import Recommend from "../../components/Recommend/Recommend.vue";
 import store from "../../store";
-import {
-  getBanner,
-  getrecommend,
-  getHotList,
-  getRemmendList,
-} from "../../utils/api";
+// import {
+//   getBanner,
+//   getrecommend,
+//   getHotList,
+//   getRemmendList,
+// } from "../../utils/api";
 export default {
   components: { Recommend },
   data() {
@@ -96,33 +96,94 @@ export default {
     this.getUpperList();
   },
   methods: {
-    async getMyBanner() {
-      const data = await getBanner();
-      this.swiperList = data.banners;
+    getMyBanner() {
+	  uniCloud.callFunction({
+	  	name:"getBanners",
+		success:(res) => {
+			this.swiperList = res.result.data
+		}
+	  })
+	  // const data = await getBanner();
+   //    this.swiperList = data.banners;
+	  // console.log(this.swiperList)
     },
-    async getCommendList() {
-      const { playlist } = await getrecommend(2);
-      this.recommendList = playlist.tracks.slice(0, 6);
+    getCommendList() {
+      // const { playlist } = await getrecommend(2);
+      // console.log("base",playlist)
+	  uniCloud.callFunction({
+	  	name:"getTopList",
+		data:{
+			type:3
+		},
+		success: (res) => {
+			// this.recommendList = res.result.data.data[0].tracks.slice(0, 6);
+			this.recommendList = res.result.data.data[0].tracks.slice(0, 6);
+		}
+	  })
+      // this.recommendList = playlist.tracks.slice(0, 6);
     },
-    async getMyHotList() {
-      const { playlists } = await getHotList(10);
-      this.hotList = playlists;
+    getMyHotList() {
+   //    const { playlists } = await getHotList(10);
+	  // console.log("base",playlists);
+	  uniCloud.callFunction({
+	  	name:"getHotSongMeauList",
+	  		success: (res) => {
+	  			this.hotList = res.result.data
+	  		}
+	  })
+      // this.hotList = playlists;
     },
-    async getMyRemmendList() {
-      const { playlists } = await getRemmendList(10);
-      this.recommends = playlists;
+    getMyRemmendList() {
+   //    const { playlists } = await getRemmendList(10);
+	  // console.log(playlists)
+	  uniCloud.callFunction({
+	  	name:"getRemmendSongMeau",
+	  		success: (res) => {
+	  			// this.hotList = res.result.data
+				this.recommends= res.result.data;
+	  		}
+	  })
+      // this.recommends = playlists;
     },
-    async getNewList() {
-      const { playlist } = await getrecommend(0);
-      this.newList = playlist;
+    getNewList() {
+   //    const { playlist } = await getrecommend(0);
+	  // console.log("base",playlist)
+	  uniCloud.callFunction({
+	  	name:"getTopList",
+	  		data:{
+	  			type:1
+	  		},
+	  		success: (res) => {
+	  			this.newList = res.result.data.data[0];
+	  		}
+	  })
+      // this.newList = playlist;
     },
     async getCreaterList() {
-      const { playlist } = await getrecommend(3);
-      this.createrList = playlist;
+      // const { playlist } = await getrecommend(3);
+	 uniCloud.callFunction({
+	 	name:"getTopList",
+	 		data:{
+	 			type:0
+	 		},
+	 		success: (res) => {
+	 			this.createrList = res.result.data.data[0];
+	 		}
+	 })
+      // this.createrList = playlist;
     },
-    async getUpperList() {
-      const { playlist } = await getrecommend(2);
-      this.upperList = playlist;
+    getUpperList() {
+		uniCloud.callFunction({
+			name:"getTopList",
+				data:{
+					type:2
+				},
+				success: (res) => {
+					this.upperList = res.result.data.data[0];
+				}
+		})
+      // const { playlist } = await getrecommend(2);
+      // this.upperList = playlist;
     },
     goSearch() {
       uni.navigateTo({

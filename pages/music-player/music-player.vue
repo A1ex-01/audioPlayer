@@ -1,6 +1,6 @@
 <template>
   <view class="warp">
-    <view class="bg">
+    <view class="bg" v-if="songInfo">
       <image class="bg-image" :src="songInfo.al.picUrl" mode="aspectFill" />
     </view>
     <view class="bg-cover"> </view>
@@ -31,7 +31,7 @@
 
 <script>
 import musicUi from "../../components/music-ui/music-ui.vue";
-import { getSongDetailInfo, getSongLyric } from "../../utils/api";
+// import { getSongDetailInfo, getSongLyric } from "../../utils/api";
 import store from "../../store/index.js";
 import parseLyric from "../../utils/parse-lyric";
 export default {
@@ -43,6 +43,7 @@ export default {
     };
   },
   onLoad(options) {
+	  console.log(options)
     if (options.ids) {
       store.commit("getIds", { ids: options.ids, index: options.index });
       this.getPageInfo();
@@ -57,15 +58,33 @@ export default {
   },
   methods: {
     async getPageInfo() {
-      const { songs } = await getSongDetailInfo(this.ids);
-      store.commit("getSongInfo", songs[0]);
+      // const { songs } = await getSongDetailInfo(this.ids);
+      // console.log("base",songs);
+      uni.request({
+        url: 'https://axplayer-node.vercel.app/song/detail?ids='+ this.ids,
+        success: (res) => {
+          const { songs } = res.data
+          store.commit("getSongInfo", songs[0]);
+
+        }
+      });
+      // store.commit("getSongInfo", songs[0]);
     },
     pageChange(e) {
       this.currPage = e.detail.current;
     },
-    async getLyric() {
-      const { lrc } = await getSongLyric(this.ids);
-      store.commit("getSongLyric", parseLyric(lrc.lyric));
+    getLyric() {
+      // const { lrc } = await getSongLyric(this.ids);
+      // console.log("vase",lrc);
+      uni.request({
+        url: 'https://axplayer-node.vercel.app/lyric?id=' + this.ids,
+        success: (res) => {
+          // res.data.lrc
+		  // console.log("vode",res.data.lrc)
+          store.commit("getSongLyric", parseLyric(res.data.lrc.lyric));
+        }
+      });
+      // store.commit("getSongLyric", parseLyric(lrc.lyric));
     },
   },
 };

@@ -59,13 +59,13 @@
 </template>
 
 <script>
-import {
-  getHotSearchTag,
-  getSearchResult,
-  getSearchContent,
-} from "../../utils/api";
+// import {
+//   getHotSearchTag,
+//   // getSearchResult,
+//   getSearchContent,
+// } from "../../utils/api";
 import store from "../../store";
-import { getSeatchMeauo } from "../../utils/api";
+// import { getSeatchMeauo } from "../../utils/api";
 export default {
   data() {
     return {
@@ -93,29 +93,53 @@ export default {
       for (let i in this.resultSong) {
         arr.push(this.resultSong[i].id);
       }
-      const { songs } = await getSeatchMeauo(arr);
-      store.commit("getPlayMeauList", {
-        list: songs,
-        index: i,
-      });
-      uni.navigateTo({
-        url: `/pages/music-player/music-player?ids=${v}&index=${i}`,
+      // const { songs } = await getSeatchMeauo(arr);
+      // console.log(songs,arr);
+      uni.request({
+        url: "https://axplayer-node.vercel.app/song/detail?ids=" + arr.toString(),
+        success: (res) => {
+          console.log("node", res.data.songs);
+          store.commit("getPlayMeauList", {
+            list: res.data.songs,
+            index: i,
+          });
+          uni.navigateTo({
+            url: `/pages/music-player/music-player?ids=${v}&index=${i}`,
+          });
+        },
       });
     },
     async getSeatchTag() {
-      const { result } = await getHotSearchTag();
-      this.tag = result.hots;
+      // const { result } = await getHotSearchTag();
+      // console.log("a",result)
+      uni.request({
+        url: "https://axplayer-node.vercel.app/search/hot",
+        success: (res) => {
+          this.tag = res.data.result.hots;
+        },
+      });
+      // this.tag = result.hots;
     },
     valueChange(e) {
-      console.log(e);
       this.resultShow = false;
       clearTimeout(this.p1);
       this.searchValue = e;
       if (this.searchValue) {
         this.p1 = setTimeout(async () => {
-          const { result } = await getSearchResult(e);
-          this.list = result.allMatch;
-          this.SongNodes = result.allMatch;
+          // const { result } = await getSearchResult(e);
+          // console.log("base",result)
+          uni.request({
+            url:
+              "https://axplayer-node.vercel.app/search/suggest?keywords=" +
+              e +
+              "&type=mobile",
+            success: (res) => {
+              this.list = res.data.result.allMatch;
+              this.SongNodes = res.data.result.allMatch;
+            },
+          });
+          // this.list = result.allMatch;
+          // this.SongNodes = result.allMatch;
         }, 500);
       } else {
         this.p1 = null;
@@ -204,22 +228,44 @@ export default {
     async choose(i) {
       this.searchValue = this.list[i].keyword;
       // this.valueChange({ detail: this.searchValue });
-      const { result } = await getSearchContent(this.searchValue);
-      this.resultSong = result.songs;
+      // const { result } = await getSearchContent(this.searchValue);
+      // console.log("base",result)
+      uni.request({
+        url: "https://axplayer-node.vercel.app/search?keywords=" + this.searchValue,
+        success: (res) => {
+          // console.log("node",res.data);
+          this.resultSong = res.data.result.songs;
+        },
+      });
+      // this.resultSong = result.songs;
       this.resultShow = true;
     },
-    async hotClick(i) {
+    hotClick(i) {
       this.searchValue = i;
       // this.valueChange({ detail: this.searchValue });
       // this.status = true
-      const { result } = await getSearchContent(this.searchValue);
-      this.resultSong = result.songs;
+      // const { result } = await getSearchContent(this.searchValue);
+      uni.request({
+        url: "https://axplayer-node.vercel.app/search?keywords=" + this.searchValue,
+        success: (res) => {
+          // console.log("node",res.data);
+          this.resultSong = res.data.result.songs;
+        },
+      });
+      // this.resultSong = result.songs;
       this.resultShow = true;
     },
-    async confirm() {
+    confirm() {
       if (this.searchValue) {
-        const { result } = await getSearchContent(this.searchValue);
-        this.resultSong = result.songs;
+        // const { result } = await getSearchContent(this.searchValue);
+        uni.request({
+          url: "https://axplayer-node.vercel.app/search?keywords=" + this.searchValue,
+          success: (res) => {
+            // console.log("node",res.data);
+            this.resultSong = res.data.result.songs;
+          },
+        });
+        // this.resultSong = result.songs;
         this.resultShow = true;
       }
     },

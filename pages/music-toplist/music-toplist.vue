@@ -77,25 +77,49 @@ export default {
       this.meauId = options.meauId;
       this.getSongMeauList();
     }
-    setTimeout(() => {
-      console.log("playlist", this.playList.tracks);
-    }, 1000);
   },
   methods: {
-    async getPageList() {
-      const { playlist } = await getrecommend(this.idx);
-      this.playList = playlist;
+    getPageList() {
+      // const { playlist } = await getrecommend(this.idx);// 0 => new  3 =》 原创  2 =》 飙升 1 =》 热歌
+      let type = null;
+      if (this.idx == 0) {
+        type = 1;
+      } else if (this.idx == 3) {
+        type = 0;
+      } else if (this.idx == 2) {
+        type = 2;
+      } else if (this.idx == 1) {
+        type = 3;
+      }
+      uniCloud.callFunction({
+        name: "getTopList",
+        data: {
+          type,
+        },
+        success: (res) => {
+          // this.recommendList = res.result.data.data[0].tracks.slice(0, 6);
+          this.playList = res.result.data.data[0];
+        },
+      });
+      // this.playList = playlist;
     },
     async getSongMeauList() {
-      const { playlist } = await getSongMeauDetailById(this.meauId);
-      this.playList = playlist;
+      // const { playlist } = await getSongMeauDetailById(this.meauId);
+      // console.log("base",playlist)
+      uni.request({
+        url: "https://axplayer-node.vercel.app/playlist/detail?id=" + this.meauId,
+        success: (res) => {
+          this.playList = res.data.playlist;
+        },
+      });
+      // this.playList = playlist;
     },
     filterCount(val) {
       return val;
     },
     goMusicPlayer(v, i) {
       store.commit("getPlayMeauList", { list: this.playList.tracks, index: i });
-      console.log(v, i)
+      console.log(v, i);
       uni.navigateTo({
         url: `/pages/music-player/music-player?ids=${v}&index=${i}`,
       });

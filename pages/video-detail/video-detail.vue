@@ -22,11 +22,6 @@
 </template>
 
 <script>
-import {
-  getMvAddrById,
-  getMvDetailById,
-  getRelatedVideo,
-} from "../../utils/api.js";
 export default {
   data() {
     return {
@@ -48,17 +43,41 @@ export default {
     this.getRelated();
   },
   methods: {
-    async getMvAddr() {
-      const { data } = await getMvAddrById(this.id);
-      this.addr = data;
+    getMvAddr() {
+      // const { data } = await getMvAddrById(this.id);
+	  // console.log("addrinfo",data);
+	  uni.request({
+	  	url:"https://axplayer-node.vercel.app/mv/url?id=" + this.id,
+		success: (res) => {
+			// console.log("node",res)
+			this.addr = res.data.data;
+		}
+	  })
+      // this.addr = data;
     },
     async getMvDetail() {
-      const { data } = await getMvDetailById(this.id);
-      this.detail = data;
+      // const { data } = await getMvDetailById(this.id);
+	  // console.log("base",data);
+	  uni.request({
+	  	url:"https://axplayer-node.vercel.app/mv/detail?mvid=" + this.id,
+		success: (res) => {
+			// console.log("node",res)
+			this.detail =  res.data.data;
+		}
+	  })
+      // this.detail = data;
     },
     async getRelated() {
-      const { data } = await getRelatedVideo(this.id);
-      this.relate = data;
+      // const { data } = await getRelatedVideo(this.id);
+	  // console.log("base",data)
+	  uni.request({
+	  	url:"https://axplayer-node.vercel.app/related/allvideo?id=" + this.id,
+		success: (res) => {
+			// console.log(res.data.data);
+			this.relate = res.data.data;
+		}
+	  })
+      // this.relate = data;
     },
   },
 };

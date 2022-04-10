@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import audio from "../utils/store"
-import { getSongLyric, getSongDetailInfo } from "../utils/api"
+// import { getSongLyric, getSongDetailInfo } from "../utils/api"
 import parseLyric from "../utils/parse-lyric"
 Vue.use(Vuex)
 const store = new Vuex.Store({
@@ -26,15 +26,18 @@ const store = new Vuex.Store({
             state.playMeauIndex = payload.index;
             state.isPlayer = true;
             // 先停止播放 再赋值并开启播放
-            audio.stop();
+            // audio.stop();
+            this.commit("seekTime", 0);
+            // audio.currentTime = 0;
             audio.src = `https://music.163.com/song/media/outer/url?id=${state.ids}.mp3`;
-            setTimeout(() => {
-                audio.title = state.songInfo.name;
-            }, 500);
-            audio.autoplay = true;
-            audio.onCanplay(() => {
-                audio.play();
-            })
+            // setTimeout(() => {
+                audio.title = payload.ids;
+            // }, 500);
+            // audio.autoplay = true;
+            audio.play();
+            // audio.onCanplay(() => {
+            //     audio.play();
+            // })
             // 播放
             audio.onTimeUpdate(() => {
                 this.commit("getCurrTime", audio.currentTime);
@@ -126,11 +129,25 @@ const store = new Vuex.Store({
     },
     actions: {
         async updateAllInfo({ commit }, payload) {
-            const { songs } = await getSongDetailInfo(payload);
-            commit("getSongInfo", songs[0]);
-            const { lrc } = await getSongLyric(payload);
-            commit("getSongLyric", parseLyric(lrc.lyric));
-
+            // const { songs } = await getSongDetailInfo(payload);
+            uni.request({
+                url: 'https://axplayer-node.vercel.app/song/detail?ids=' + payload,
+                success: (res) => {
+                    const { songs } = res.data
+                    commit("getSongInfo", songs[0]);
+                }
+            });
+            // commit("getSongInfo", songs[0]);
+            // const { lrc } = await getSongLyric(payload);
+            uni.request({
+                url: 'https://axplayer-node.vercel.app/lyric?id=' + payload,
+                success: (res) => {
+                    // res.data.lrc
+                    // console.log("vode",res.data.lrc)
+                    commit("getSongLyric", parseLyric(res.data.lrc.lyric));
+                }
+            });
+            // commit("getSongLyric", parseLyric(lrc.lyric));
         }
     }
 })

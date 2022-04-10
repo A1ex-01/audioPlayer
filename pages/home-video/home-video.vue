@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { getMovieList } from "../../utils/api.js";
+// import { getMovieList } from "../../utils/api.js";
 export default {
   data() {
     return {
@@ -30,33 +30,52 @@ export default {
   },
   methods: {
     // 初始化列表
-    async getInitList() {
-      const { data } = await getMovieList(0);
-      this.mvList = data;
-      console.log(this.mvList);
+    getInitList() {
+	  uniCloud.callFunction({
+		  name:"getMovieList",
+	  	data:{
+			page:this.page
+		},
+		success:(res) => {
+			// this.mvList = res.result.data;
+			this.mvList = res.result.data
+		}
+	  })
+	  // const { data } = await getMovieList(0);
     },
 
     // 下拉获取列表
-    async getListByPage() {
+    getListByPage() {
       if (this.allowPull) {
-        const { data, hasMore } = await getMovieList((this.page - 1) * 10);
-        if (!hasMore) {
-          this.allowPull = false;
-          return;
-        }
-        this.mvList = this.mvList.concat(data);
+        // const { data, hasMore } = await getMovieList((this.page - 1) * 10);
+		uniCloud.callFunction({
+				  name:"getMovieList",
+			data:{
+					page:this.page
+				},
+				success:(res) => {
+					this.mvList = this.mvList.concat(res.result.data);
+				}
+		})
+        // if (!hasMore) {
+        //   this.allowPull = false;
+        //   return;
+        // }
+        // this.mvList = this.mvList.concat(data);
       }
     },
 
     // 触底行为
     scrolltolower() {
-      this.page++;
-      this.getListByPage();
+		if(this.page <=5) {
+			this.page++;
+			this.getListByPage();
+		}else{
+			this.allowPull = false;
+		}
     },
-
     // 跳转至视屏详情页
     goVideoDetail(val) {
-      console.log(val);
       uni.navigateTo({
         url: "../video-detail/video-detail?id=" + val,
       });

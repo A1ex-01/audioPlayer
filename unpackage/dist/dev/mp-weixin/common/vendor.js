@@ -8785,11 +8785,11 @@ function normalizeComponent (
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 13));var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 3));
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 13));var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 3));
 var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 16));
 var _store = _interopRequireDefault(__webpack_require__(/*! ../utils/store */ 17));
-var _api = __webpack_require__(/*! ../utils/api */ 18);
-var _parseLyric = _interopRequireDefault(__webpack_require__(/*! ../utils/parse-lyric */ 20));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}
+
+var _parseLyric = _interopRequireDefault(__webpack_require__(/*! ../utils/parse-lyric */ 18));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}
 _vue.default.use(_vuex.default);
 var store = new _vuex.default.Store({
   state: {
@@ -8813,15 +8813,18 @@ var store = new _vuex.default.Store({
       state.playMeauIndex = payload.index;
       state.isPlayer = true;
       // 先停止播放 再赋值并开启播放
-      _store.default.stop();
+      // audio.stop();
+      this.commit("seekTime", 0);
+      // audio.currentTime = 0;
       _store.default.src = "https://music.163.com/song/media/outer/url?id=".concat(state.ids, ".mp3");
-      setTimeout(function () {
-        _store.default.title = state.songInfo.name;
-      }, 500);
-      _store.default.autoplay = true;
-      _store.default.onCanplay(function () {
-        _store.default.play();
-      });
+      // setTimeout(() => {
+      _store.default.title = payload.ids;
+      // }, 500);
+      // audio.autoplay = true;
+      _store.default.play();
+      // audio.onCanplay(() => {
+      //     audio.play();
+      // })
       // 播放
       _store.default.onTimeUpdate(function () {
         _this.commit("getCurrTime", _store.default.currentTime);
@@ -8912,16 +8915,31 @@ var store = new _vuex.default.Store({
     } },
 
   actions: {
-    updateAllInfo: function updateAllInfo(_ref, payload) {return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {var commit, _yield$getSongDetailI, songs, _yield$getSongLyric, lrc;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:commit = _ref.commit;_context.next = 3;return (
-                  (0, _api.getSongDetailInfo)(payload));case 3:_yield$getSongDetailI = _context.sent;songs = _yield$getSongDetailI.songs;
-                commit("getSongInfo", songs[0]);_context.next = 8;return (
-                  (0, _api.getSongLyric)(payload));case 8:_yield$getSongLyric = _context.sent;lrc = _yield$getSongLyric.lrc;
-                commit("getSongLyric", (0, _parseLyric.default)(lrc.lyric));case 11:case "end":return _context.stop();}}}, _callee);}))();
+    updateAllInfo: function updateAllInfo(_ref, payload) {return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {var commit;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:commit = _ref.commit;
+                // const { songs } = await getSongDetailInfo(payload);
+                uni.request({
+                  url: 'https://axplayer-node.vercel.app/song/detail?ids=' + payload,
+                  success: function success(res) {var
+                    songs = res.data.songs;
+                    commit("getSongInfo", songs[0]);
+                  } });
 
-    } } });var _default =
+                // commit("getSongInfo", songs[0]);
+                // const { lrc } = await getSongLyric(payload);
+                uni.request({
+                  url: 'https://axplayer-node.vercel.app/lyric?id=' + payload,
+                  success: function success(res) {
+                    // res.data.lrc
+                    // console.log("vode",res.data.lrc)
+                    commit("getSongLyric", (0, _parseLyric.default)(res.data.lrc.lyric));
+                  } });
+
+                // commit("getSongLyric", parseLyric(lrc.lyric));
+              case 3:case "end":return _context.stop();}}}, _callee);}))();} } });var _default =
 
 
 store;exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 /* 13 */
@@ -10984,110 +11002,6 @@ audio;exports.default = _default;
 
 /***/ }),
 /* 18 */
-/*!*********************************************!*\
-  !*** D:/前端开发/uni_app/AXplayer/utils/api.js ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.getMovieList = getMovieList;exports.getMvAddrById = getMvAddrById;exports.getMvDetailById = getMvDetailById;exports.getRelatedVideo = getRelatedVideo;exports.getBanner = getBanner;exports.getrecommend = getrecommend;exports.getHotList = getHotList;exports.getRemmendList = getRemmendList;exports.getSongMeauDetailById = getSongMeauDetailById;exports.getHotSearchTag = getHotSearchTag;exports.getSearchResult = getSearchResult;exports.getSearchContent = getSearchContent;exports.getSongDetailInfo = getSongDetailInfo;exports.getSongLyric = getSongLyric;exports.getSeatchMeauo = getSeatchMeauo;var _request2 = __webpack_require__(/*! ./request.js */ 19);
-
-// 获取电影列表
-function getMovieList(offset) {
-  return (0, _request2._request)("/top/mv", "get", { offset: offset, limit: 10 });
-}
-
-// 获取播放地址
-function getMvAddrById(id) {
-  return (0, _request2._request)("/mv/url", "get", { id: id });
-}
-
-// 获取mv详细信息
-function getMvDetailById(mvid) {
-  return (0, _request2._request)("/mv/detail", "get", { mvid: mvid });
-}
-
-// 获取相关视频
-function getRelatedVideo(id) {
-  return (0, _request2._request)("/related/allvideo", "get", { id: id });
-}
-
-// 获取轮播图数据
-function getBanner() {
-  return (0, _request2._request)("/banner", "get", { type: 2 });
-}
-
-// 获取推荐列表
-function getrecommend(idx) {
-  return (0, _request2._request)("/top/list", "get", { idx: idx });
-}
-// 获取热门歌单
-function getHotList(limit) {
-  return (0, _request2._request)("/top/playlist", "get", { limit: limit });
-}
-// 获取推荐歌单
-function getRemmendList(limit) {
-  return (0, _request2._request)("/top/playlist", "get", { limit: limit, cat: "华语" });
-}
-// 获取歌单详情
-function getSongMeauDetailById(id) {
-  return (0, _request2._request)("/playlist/detail/dynamic", "get", { id: id });
-}
-// 热门搜索
-function getHotSearchTag() {
-  return (0, _request2._request)("/search/hot", "get");
-}
-// 搜索建议
-function getSearchResult(keywords) {
-  return (0, _request2._request)("/search/suggest", "get", { keywords: keywords, type: "mobile" });
-}
-// 搜索结果
-function getSearchContent(keywords) {
-  return (0, _request2._request)("/search", "get", { keywords: keywords });
-}
-// 获取歌曲详细信息
-function getSongDetailInfo(ids) {
-  return (0, _request2._request)("/song/detail", "get", { ids: ids });
-}
-// 获取歌曲歌词
-function getSongLyric(id) {
-  return (0, _request2._request)("/lyric", "get", { id: id });
-}
-
-// search create meau
-function getSeatchMeauo(arr) {
-  return (0, _request2._request)("/song/detail?ids=" + arr.toString(), "get");
-}
-
-/***/ }),
-/* 19 */
-/*!*************************************************!*\
-  !*** D:/前端开发/uni_app/AXplayer/utils/request.js ***!
-  \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports._request = void 0; // 基地址
-var baseURL = "http://123.207.32.32:9001";
-var _request = function _request(url, method) {var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  return new Promise(function (resolve, reject) {
-    uni.request({
-      url: baseURL + url,
-      method: method,
-      data: params,
-      success: function success(res) {
-        resolve(res.data);
-      },
-      fail: reject });
-
-  });
-};exports._request = _request;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
-
-/***/ }),
-/* 20 */
 /*!*****************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/utils/parse-lyric.js ***!
   \*****************************************************/
@@ -11115,7 +11029,7 @@ function parseLyric(lyric) {
 parseLyric;exports.default = _default;
 
 /***/ }),
-/* 21 */
+/* 19 */
 /*!**************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/index.js ***!
   \**************************************************************/
@@ -11129,36 +11043,36 @@ parseLyric;exports.default = _default;
 
 
 
-var _mixin = _interopRequireDefault(__webpack_require__(/*! ./libs/mixin/mixin.js */ 22));
+var _mixin = _interopRequireDefault(__webpack_require__(/*! ./libs/mixin/mixin.js */ 20));
 
-var _mpMixin = _interopRequireDefault(__webpack_require__(/*! ./libs/mixin/mpMixin.js */ 23));
+var _mpMixin = _interopRequireDefault(__webpack_require__(/*! ./libs/mixin/mpMixin.js */ 21));
 
-var _luchRequest = _interopRequireDefault(__webpack_require__(/*! ./libs/luch-request */ 24));
-
-
-var _route = _interopRequireDefault(__webpack_require__(/*! ./libs/util/route.js */ 42));
-
-var _colorGradient = _interopRequireDefault(__webpack_require__(/*! ./libs/function/colorGradient.js */ 43));
+var _luchRequest = _interopRequireDefault(__webpack_require__(/*! ./libs/luch-request */ 22));
 
 
-var _test = _interopRequireDefault(__webpack_require__(/*! ./libs/function/test.js */ 44));
+var _route = _interopRequireDefault(__webpack_require__(/*! ./libs/util/route.js */ 40));
 
-var _debounce = _interopRequireDefault(__webpack_require__(/*! ./libs/function/debounce.js */ 45));
-
-var _throttle = _interopRequireDefault(__webpack_require__(/*! ./libs/function/throttle.js */ 46));
-
-var _index = _interopRequireDefault(__webpack_require__(/*! ./libs/function/index.js */ 47));
+var _colorGradient = _interopRequireDefault(__webpack_require__(/*! ./libs/function/colorGradient.js */ 41));
 
 
-var _config = _interopRequireDefault(__webpack_require__(/*! ./libs/config/config.js */ 49));
+var _test = _interopRequireDefault(__webpack_require__(/*! ./libs/function/test.js */ 42));
 
-var _props = _interopRequireDefault(__webpack_require__(/*! ./libs/config/props.js */ 50));
+var _debounce = _interopRequireDefault(__webpack_require__(/*! ./libs/function/debounce.js */ 43));
 
-var _zIndex = _interopRequireDefault(__webpack_require__(/*! ./libs/config/zIndex.js */ 140));
+var _throttle = _interopRequireDefault(__webpack_require__(/*! ./libs/function/throttle.js */ 44));
 
-var _color = _interopRequireDefault(__webpack_require__(/*! ./libs/config/color.js */ 98));
+var _index = _interopRequireDefault(__webpack_require__(/*! ./libs/function/index.js */ 45));
 
-var _platform = _interopRequireDefault(__webpack_require__(/*! ./libs/function/platform */ 141));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;} // 看到此报错，是因为没有配置vue.config.js的【transpileDependencies】，详见：https://www.uviewui.com/components/npmSetting.html#_5-cli模式额外配置
+
+var _config = _interopRequireDefault(__webpack_require__(/*! ./libs/config/config.js */ 47));
+
+var _props = _interopRequireDefault(__webpack_require__(/*! ./libs/config/props.js */ 48));
+
+var _zIndex = _interopRequireDefault(__webpack_require__(/*! ./libs/config/zIndex.js */ 138));
+
+var _color = _interopRequireDefault(__webpack_require__(/*! ./libs/config/color.js */ 96));
+
+var _platform = _interopRequireDefault(__webpack_require__(/*! ./libs/function/platform */ 139));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;} // 看到此报错，是因为没有配置vue.config.js的【transpileDependencies】，详见：https://www.uviewui.com/components/npmSetting.html#_5-cli模式额外配置
 var pleaseSetTranspileDependencies = {},babelTest = pleaseSetTranspileDependencies === null || pleaseSetTranspileDependencies === void 0 ? void 0 : pleaseSetTranspileDependencies.test; // 引入全局mixin
 var $u = _objectSpread(_objectSpread({
   route: _route.default,
@@ -11204,7 +11118,7 @@ var install = function install(Vue) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 22 */
+/* 20 */
 /*!*************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/mixin/mixin.js ***!
   \*************************************************************************/
@@ -11373,7 +11287,7 @@ var install = function install(Vue) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 23 */
+/* 21 */
 /*!***************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/mixin/mpMixin.js ***!
   \***************************************************************************/
@@ -11388,7 +11302,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     virtualHost: true } };exports.default = _default;
 
 /***/ }),
-/* 24 */
+/* 22 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/index.js ***!
   \********************************************************************************/
@@ -11396,12 +11310,12 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _Request = _interopRequireDefault(__webpack_require__(/*! ./core/Request */ 25));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var _default =
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _Request = _interopRequireDefault(__webpack_require__(/*! ./core/Request */ 23));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var _default =
 
 _Request.default;exports.default = _default;
 
 /***/ }),
-/* 25 */
+/* 23 */
 /*!***************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/core/Request.js ***!
   \***************************************************************************************/
@@ -11422,12 +11336,12 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
-var _dispatchRequest = _interopRequireDefault(__webpack_require__(/*! ./dispatchRequest */ 26));
-var _InterceptorManager = _interopRequireDefault(__webpack_require__(/*! ./InterceptorManager */ 34));
-var _mergeConfig = _interopRequireDefault(__webpack_require__(/*! ./mergeConfig */ 35));
-var _defaults = _interopRequireDefault(__webpack_require__(/*! ./defaults */ 36));
-var _utils = __webpack_require__(/*! ../utils */ 29);
-var _clone = _interopRequireDefault(__webpack_require__(/*! ../utils/clone */ 37));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}function _classCallCheck(instance, Constructor) {if (!(instance instanceof Constructor)) {throw new TypeError("Cannot call a class as a function");}}function _defineProperties(target, props) {for (var i = 0; i < props.length; i++) {var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);}}function _createClass(Constructor, protoProps, staticProps) {if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;}var
+var _dispatchRequest = _interopRequireDefault(__webpack_require__(/*! ./dispatchRequest */ 24));
+var _InterceptorManager = _interopRequireDefault(__webpack_require__(/*! ./InterceptorManager */ 32));
+var _mergeConfig = _interopRequireDefault(__webpack_require__(/*! ./mergeConfig */ 33));
+var _defaults = _interopRequireDefault(__webpack_require__(/*! ./defaults */ 34));
+var _utils = __webpack_require__(/*! ../utils */ 27);
+var _clone = _interopRequireDefault(__webpack_require__(/*! ../utils/clone */ 35));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}function _classCallCheck(instance, Constructor) {if (!(instance instanceof Constructor)) {throw new TypeError("Cannot call a class as a function");}}function _defineProperties(target, props) {for (var i = 0; i < props.length; i++) {var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);}}function _createClass(Constructor, protoProps, staticProps) {if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;}var
 
 Request = /*#__PURE__*/function () {
   /**
@@ -11609,7 +11523,7 @@ Request = /*#__PURE__*/function () {
                                */exports.default = Request;
 
 /***/ }),
-/* 26 */
+/* 24 */
 /*!***********************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/core/dispatchRequest.js ***!
   \***********************************************************************************************/
@@ -11617,12 +11531,12 @@ Request = /*#__PURE__*/function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _index = _interopRequireDefault(__webpack_require__(/*! ../adapters/index */ 27));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var _default =
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _index = _interopRequireDefault(__webpack_require__(/*! ../adapters/index */ 25));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var _default =
 
 function _default(config) {return (0, _index.default)(config);};exports.default = _default;
 
 /***/ }),
-/* 27 */
+/* 25 */
 /*!*****************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/adapters/index.js ***!
   \*****************************************************************************************/
@@ -11630,10 +11544,10 @@ function _default(config) {return (0, _index.default)(config);};exports.default 
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _buildURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/buildURL */ 28));
-var _buildFullPath = _interopRequireDefault(__webpack_require__(/*! ../core/buildFullPath */ 30));
-var _settle = _interopRequireDefault(__webpack_require__(/*! ../core/settle */ 33));
-var _utils = __webpack_require__(/*! ../utils */ 29);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _buildURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/buildURL */ 26));
+var _buildFullPath = _interopRequireDefault(__webpack_require__(/*! ../core/buildFullPath */ 28));
+var _settle = _interopRequireDefault(__webpack_require__(/*! ../core/settle */ 31));
+var _utils = __webpack_require__(/*! ../utils */ 27);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}
 
 /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            * 返回可选值存在的配置
@@ -11730,7 +11644,7 @@ function _default(config) {return new Promise(function (resolve, reject) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 28 */
+/* 26 */
 /*!*******************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/helpers/buildURL.js ***!
   \*******************************************************************************************/
@@ -11740,7 +11654,7 @@ function _default(config) {return new Promise(function (resolve, reject) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });exports.default = buildURL;
 
-var utils = _interopRequireWildcard(__webpack_require__(/*! ../utils */ 29));function _getRequireWildcardCache() {if (typeof WeakMap !== "function") return null;var cache = new WeakMap();_getRequireWildcardCache = function _getRequireWildcardCache() {return cache;};return cache;}function _interopRequireWildcard(obj) {if (obj && obj.__esModule) {return obj;}if (obj === null || typeof obj !== "object" && typeof obj !== "function") {return { default: obj };}var cache = _getRequireWildcardCache();if (cache && cache.has(obj)) {return cache.get(obj);}var newObj = {};var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;for (var key in obj) {if (Object.prototype.hasOwnProperty.call(obj, key)) {var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;if (desc && (desc.get || desc.set)) {Object.defineProperty(newObj, key, desc);} else {newObj[key] = obj[key];}}}newObj.default = obj;if (cache) {cache.set(obj, newObj);}return newObj;}
+var utils = _interopRequireWildcard(__webpack_require__(/*! ../utils */ 27));function _getRequireWildcardCache() {if (typeof WeakMap !== "function") return null;var cache = new WeakMap();_getRequireWildcardCache = function _getRequireWildcardCache() {return cache;};return cache;}function _interopRequireWildcard(obj) {if (obj && obj.__esModule) {return obj;}if (obj === null || typeof obj !== "object" && typeof obj !== "function") {return { default: obj };}var cache = _getRequireWildcardCache();if (cache && cache.has(obj)) {return cache.get(obj);}var newObj = {};var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;for (var key in obj) {if (Object.prototype.hasOwnProperty.call(obj, key)) {var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;if (desc && (desc.get || desc.set)) {Object.defineProperty(newObj, key, desc);} else {newObj[key] = obj[key];}}}newObj.default = obj;if (cache) {cache.set(obj, newObj);}return newObj;}
 
 function encode(val) {
   return encodeURIComponent(val).
@@ -11809,7 +11723,7 @@ function buildURL(url, params) {
 }
 
 /***/ }),
-/* 29 */
+/* 27 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/utils.js ***!
   \********************************************************************************/
@@ -11950,7 +11864,7 @@ function isUndefined(val) {
 }
 
 /***/ }),
-/* 30 */
+/* 28 */
 /*!*********************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/core/buildFullPath.js ***!
   \*********************************************************************************************/
@@ -11960,8 +11874,8 @@ function isUndefined(val) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });exports.default = buildFullPath;
 
-var _isAbsoluteURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/isAbsoluteURL */ 31));
-var _combineURLs = _interopRequireDefault(__webpack_require__(/*! ../helpers/combineURLs */ 32));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+var _isAbsoluteURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/isAbsoluteURL */ 29));
+var _combineURLs = _interopRequireDefault(__webpack_require__(/*! ../helpers/combineURLs */ 30));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
 
 /**
                                                                                                                                                                             * Creates a new URL by combining the baseURL with the requestedURL,
@@ -11980,7 +11894,7 @@ function buildFullPath(baseURL, requestedURL) {
 }
 
 /***/ }),
-/* 31 */
+/* 29 */
 /*!************************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/helpers/isAbsoluteURL.js ***!
   \************************************************************************************************/
@@ -12004,7 +11918,7 @@ function isAbsoluteURL(url) {
 }
 
 /***/ }),
-/* 32 */
+/* 30 */
 /*!**********************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/helpers/combineURLs.js ***!
   \**********************************************************************************************/
@@ -12028,7 +11942,7 @@ function combineURLs(baseURL, relativeURL) {
 }
 
 /***/ }),
-/* 33 */
+/* 31 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/core/settle.js ***!
   \**************************************************************************************/
@@ -12054,7 +11968,7 @@ function settle(resolve, reject, response) {var
 }
 
 /***/ }),
-/* 34 */
+/* 32 */
 /*!**************************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/core/InterceptorManager.js ***!
   \**************************************************************************************************/
@@ -12114,7 +12028,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 InterceptorManager;exports.default = _default;
 
 /***/ }),
-/* 35 */
+/* 33 */
 /*!*******************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/core/mergeConfig.js ***!
   \*******************************************************************************************/
@@ -12122,7 +12036,7 @@ InterceptorManager;exports.default = _default;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _utils = __webpack_require__(/*! ../utils */ 29);function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _utils = __webpack_require__(/*! ../utils */ 27);function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}
 
 /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   * 合并局部配置优先的配置，如果局部有该配置项则用局部，如果全局有该配置项则用全局
@@ -12227,7 +12141,7 @@ function _default(globalsConfig) {var config2 = arguments.length > 1 && argument
 };exports.default = _default;
 
 /***/ }),
-/* 36 */
+/* 34 */
 /*!****************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/core/defaults.js ***!
   \****************************************************************************************/
@@ -12265,7 +12179,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
   } };exports.default = _default;
 
 /***/ }),
-/* 37 */
+/* 35 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/luch-request/utils/clone.js ***!
   \**************************************************************************************/
@@ -12537,10 +12451,10 @@ var clone = function () {
 }();var _default =
 
 clone;exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/buffer/index.js */ 38).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/buffer/index.js */ 36).Buffer))
 
 /***/ }),
-/* 38 */
+/* 36 */
 /*!**************************************!*\
   !*** ./node_modules/buffer/index.js ***!
   \**************************************/
@@ -12558,9 +12472,9 @@ clone;exports.default = _default;
 
 
 
-var base64 = __webpack_require__(/*! base64-js */ 39)
-var ieee754 = __webpack_require__(/*! ieee754 */ 40)
-var isArray = __webpack_require__(/*! isarray */ 41)
+var base64 = __webpack_require__(/*! base64-js */ 37)
+var ieee754 = __webpack_require__(/*! ieee754 */ 38)
+var isArray = __webpack_require__(/*! isarray */ 39)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -14341,7 +14255,7 @@ function isnan (val) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ 2)))
 
 /***/ }),
-/* 39 */
+/* 37 */
 /*!*****************************************!*\
   !*** ./node_modules/base64-js/index.js ***!
   \*****************************************/
@@ -14504,7 +14418,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 40 */
+/* 38 */
 /*!***************************************!*\
   !*** ./node_modules/ieee754/index.js ***!
   \***************************************/
@@ -14598,7 +14512,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 41 */
+/* 39 */
 /*!***************************************!*\
   !*** ./node_modules/isarray/index.js ***!
   \***************************************/
@@ -14613,7 +14527,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 42 */
+/* 40 */
 /*!************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/util/route.js ***!
   \************************************************************************/
@@ -14748,7 +14662,7 @@ new Router().route;exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 43 */
+/* 41 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/function/colorGradient.js ***!
   \************************************************************************************/
@@ -14891,7 +14805,7 @@ function colorToRgba(color, alpha) {
   colorToRgba: colorToRgba };exports.default = _default;
 
 /***/ }),
-/* 44 */
+/* 42 */
 /*!***************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/function/test.js ***!
   \***************************************************************************/
@@ -15188,7 +15102,7 @@ function regExp(o) {
   string: string };exports.default = _default;
 
 /***/ }),
-/* 45 */
+/* 43 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/function/debounce.js ***!
   \*******************************************************************************/
@@ -15227,7 +15141,7 @@ function debounce(func) {var wait = arguments.length > 1 && arguments[1] !== und
 debounce;exports.default = _default;
 
 /***/ }),
-/* 46 */
+/* 44 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/function/throttle.js ***!
   \*******************************************************************************/
@@ -15267,7 +15181,7 @@ function throttle(func) {var wait = arguments.length > 1 && arguments[1] !== und
 throttle;exports.default = _default;
 
 /***/ }),
-/* 47 */
+/* 45 */
 /*!****************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/function/index.js ***!
   \****************************************************************************/
@@ -15275,8 +15189,8 @@ throttle;exports.default = _default;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _test = _interopRequireDefault(__webpack_require__(/*! ./test.js */ 44));
-var _digit = __webpack_require__(/*! ./digit.js */ 48);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _slicedToArray(arr, i) {return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();}function _nonIterableRest() {throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}function _iterableToArrayLimit(arr, i) {if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {_arr.push(_s.value);if (i && _arr.length === i) break;}} catch (err) {_d = true;_e = err;} finally {try {if (!_n && _i["return"] != null) _i["return"]();} finally {if (_d) throw _e;}}return _arr;}function _arrayWithHoles(arr) {if (Array.isArray(arr)) return arr;}
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _test = _interopRequireDefault(__webpack_require__(/*! ./test.js */ 42));
+var _digit = __webpack_require__(/*! ./digit.js */ 46);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _slicedToArray(arr, i) {return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();}function _nonIterableRest() {throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}function _iterableToArrayLimit(arr, i) {if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {_arr.push(_s.value);if (i && _arr.length === i) break;}} catch (err) {_d = true;_e = err;} finally {try {if (!_n && _i["return"] != null) _i["return"]();} finally {if (_d) throw _e;}}return _arr;}function _arrayWithHoles(arr) {if (Array.isArray(arr)) return arr;}
 /**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @description 如果value小于min，取min；如果value大于max，取max
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              * @param {number} min 
@@ -15982,7 +15896,7 @@ function setConfig(_ref3)
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 48 */
+/* 46 */
 /*!****************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/function/digit.js ***!
   \****************************************************************************/
@@ -16157,7 +16071,7 @@ function enableBoundaryChecking() {var flag = arguments.length > 0 && arguments[
   enableBoundaryChecking: enableBoundaryChecking };exports.default = _default;
 
 /***/ }),
-/* 49 */
+/* 47 */
 /*!***************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/config.js ***!
   \***************************************************************************/
@@ -16200,7 +16114,7 @@ if (true) {
   unit: 'px' };exports.default = _default;
 
 /***/ }),
-/* 50 */
+/* 48 */
 /*!**************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props.js ***!
   \**************************************************************************/
@@ -16213,96 +16127,96 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
-var _config = _interopRequireDefault(__webpack_require__(/*! ./config */ 49));
+var _config = _interopRequireDefault(__webpack_require__(/*! ./config */ 47));
 
-var _actionSheet = _interopRequireDefault(__webpack_require__(/*! ./props/actionSheet.js */ 51));
-var _album = _interopRequireDefault(__webpack_require__(/*! ./props/album.js */ 52));
-var _alert = _interopRequireDefault(__webpack_require__(/*! ./props/alert.js */ 53));
-var _avatar = _interopRequireDefault(__webpack_require__(/*! ./props/avatar */ 54));
-var _avatarGroup = _interopRequireDefault(__webpack_require__(/*! ./props/avatarGroup */ 55));
-var _backtop = _interopRequireDefault(__webpack_require__(/*! ./props/backtop */ 56));
-var _badge = _interopRequireDefault(__webpack_require__(/*! ./props/badge */ 57));
-var _button = _interopRequireDefault(__webpack_require__(/*! ./props/button */ 58));
-var _calendar = _interopRequireDefault(__webpack_require__(/*! ./props/calendar */ 59));
-var _carKeyboard = _interopRequireDefault(__webpack_require__(/*! ./props/carKeyboard */ 60));
-var _cell = _interopRequireDefault(__webpack_require__(/*! ./props/cell */ 61));
-var _cellGroup = _interopRequireDefault(__webpack_require__(/*! ./props/cellGroup */ 62));
-var _checkbox = _interopRequireDefault(__webpack_require__(/*! ./props/checkbox */ 63));
-var _checkboxGroup = _interopRequireDefault(__webpack_require__(/*! ./props/checkboxGroup */ 64));
-var _circleProgress = _interopRequireDefault(__webpack_require__(/*! ./props/circleProgress */ 65));
-var _code = _interopRequireDefault(__webpack_require__(/*! ./props/code */ 66));
-var _codeInput = _interopRequireDefault(__webpack_require__(/*! ./props/codeInput */ 67));
-var _col = _interopRequireDefault(__webpack_require__(/*! ./props/col */ 68));
-var _collapse = _interopRequireDefault(__webpack_require__(/*! ./props/collapse */ 69));
-var _collapseItem = _interopRequireDefault(__webpack_require__(/*! ./props/collapseItem */ 70));
-var _columnNotice = _interopRequireDefault(__webpack_require__(/*! ./props/columnNotice */ 71));
-var _countDown = _interopRequireDefault(__webpack_require__(/*! ./props/countDown */ 72));
-var _countTo = _interopRequireDefault(__webpack_require__(/*! ./props/countTo */ 73));
-var _datetimePicker = _interopRequireDefault(__webpack_require__(/*! ./props/datetimePicker */ 74));
-var _divider = _interopRequireDefault(__webpack_require__(/*! ./props/divider */ 75));
-var _empty = _interopRequireDefault(__webpack_require__(/*! ./props/empty */ 76));
-var _form = _interopRequireDefault(__webpack_require__(/*! ./props/form */ 77));
-var _formItem = _interopRequireDefault(__webpack_require__(/*! ./props/formItem */ 78));
-var _gap = _interopRequireDefault(__webpack_require__(/*! ./props/gap */ 79));
-var _grid = _interopRequireDefault(__webpack_require__(/*! ./props/grid */ 80));
-var _gridItem = _interopRequireDefault(__webpack_require__(/*! ./props/gridItem */ 81));
-var _icon = _interopRequireDefault(__webpack_require__(/*! ./props/icon */ 82));
-var _image = _interopRequireDefault(__webpack_require__(/*! ./props/image */ 83));
-var _indexAnchor = _interopRequireDefault(__webpack_require__(/*! ./props/indexAnchor */ 84));
-var _indexList = _interopRequireDefault(__webpack_require__(/*! ./props/indexList */ 85));
-var _input = _interopRequireDefault(__webpack_require__(/*! ./props/input */ 86));
-var _keyboard = _interopRequireDefault(__webpack_require__(/*! ./props/keyboard */ 87));
-var _line = _interopRequireDefault(__webpack_require__(/*! ./props/line */ 88));
-var _lineProgress = _interopRequireDefault(__webpack_require__(/*! ./props/lineProgress */ 89));
-var _link = _interopRequireDefault(__webpack_require__(/*! ./props/link */ 90));
-var _list = _interopRequireDefault(__webpack_require__(/*! ./props/list */ 91));
-var _listItem = _interopRequireDefault(__webpack_require__(/*! ./props/listItem */ 92));
-var _loadingIcon = _interopRequireDefault(__webpack_require__(/*! ./props/loadingIcon */ 93));
-var _loadingPage = _interopRequireDefault(__webpack_require__(/*! ./props/loadingPage */ 94));
-var _loadmore = _interopRequireDefault(__webpack_require__(/*! ./props/loadmore */ 95));
-var _modal = _interopRequireDefault(__webpack_require__(/*! ./props/modal */ 96));
-var _navbar = _interopRequireDefault(__webpack_require__(/*! ./props/navbar */ 97));
-var _noNetwork = _interopRequireDefault(__webpack_require__(/*! ./props/noNetwork */ 99));
-var _noticeBar = _interopRequireDefault(__webpack_require__(/*! ./props/noticeBar */ 100));
-var _notify = _interopRequireDefault(__webpack_require__(/*! ./props/notify */ 101));
-var _numberBox = _interopRequireDefault(__webpack_require__(/*! ./props/numberBox */ 102));
-var _numberKeyboard = _interopRequireDefault(__webpack_require__(/*! ./props/numberKeyboard */ 103));
-var _overlay = _interopRequireDefault(__webpack_require__(/*! ./props/overlay */ 104));
-var _parse = _interopRequireDefault(__webpack_require__(/*! ./props/parse */ 105));
-var _picker = _interopRequireDefault(__webpack_require__(/*! ./props/picker */ 106));
-var _popup = _interopRequireDefault(__webpack_require__(/*! ./props/popup */ 107));
-var _radio = _interopRequireDefault(__webpack_require__(/*! ./props/radio */ 108));
-var _radioGroup = _interopRequireDefault(__webpack_require__(/*! ./props/radioGroup */ 109));
-var _rate = _interopRequireDefault(__webpack_require__(/*! ./props/rate */ 110));
-var _readMore = _interopRequireDefault(__webpack_require__(/*! ./props/readMore */ 111));
-var _row = _interopRequireDefault(__webpack_require__(/*! ./props/row */ 112));
-var _rowNotice = _interopRequireDefault(__webpack_require__(/*! ./props/rowNotice */ 113));
-var _scrollList = _interopRequireDefault(__webpack_require__(/*! ./props/scrollList */ 114));
-var _search = _interopRequireDefault(__webpack_require__(/*! ./props/search */ 115));
-var _section = _interopRequireDefault(__webpack_require__(/*! ./props/section */ 116));
-var _skeleton = _interopRequireDefault(__webpack_require__(/*! ./props/skeleton */ 117));
-var _slider = _interopRequireDefault(__webpack_require__(/*! ./props/slider */ 118));
-var _statusBar = _interopRequireDefault(__webpack_require__(/*! ./props/statusBar */ 119));
-var _steps = _interopRequireDefault(__webpack_require__(/*! ./props/steps */ 120));
-var _stepsItem = _interopRequireDefault(__webpack_require__(/*! ./props/stepsItem */ 121));
-var _sticky = _interopRequireDefault(__webpack_require__(/*! ./props/sticky */ 122));
-var _subsection = _interopRequireDefault(__webpack_require__(/*! ./props/subsection */ 123));
-var _swipeAction = _interopRequireDefault(__webpack_require__(/*! ./props/swipeAction */ 124));
-var _swipeActionItem = _interopRequireDefault(__webpack_require__(/*! ./props/swipeActionItem */ 125));
-var _swiper = _interopRequireDefault(__webpack_require__(/*! ./props/swiper */ 126));
-var _swipterIndicator = _interopRequireDefault(__webpack_require__(/*! ./props/swipterIndicator */ 127));
-var _switch2 = _interopRequireDefault(__webpack_require__(/*! ./props/switch */ 128));
-var _tabbar = _interopRequireDefault(__webpack_require__(/*! ./props/tabbar */ 129));
-var _tabbarItem = _interopRequireDefault(__webpack_require__(/*! ./props/tabbarItem */ 130));
-var _tabs = _interopRequireDefault(__webpack_require__(/*! ./props/tabs */ 131));
-var _tag = _interopRequireDefault(__webpack_require__(/*! ./props/tag */ 132));
-var _text = _interopRequireDefault(__webpack_require__(/*! ./props/text */ 133));
-var _textarea = _interopRequireDefault(__webpack_require__(/*! ./props/textarea */ 134));
-var _toast = _interopRequireDefault(__webpack_require__(/*! ./props/toast */ 135));
-var _toolbar = _interopRequireDefault(__webpack_require__(/*! ./props/toolbar */ 136));
-var _tooltip = _interopRequireDefault(__webpack_require__(/*! ./props/tooltip */ 137));
-var _transition = _interopRequireDefault(__webpack_require__(/*! ./props/transition */ 138));
-var _upload = _interopRequireDefault(__webpack_require__(/*! ./props/upload */ 139));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}var
+var _actionSheet = _interopRequireDefault(__webpack_require__(/*! ./props/actionSheet.js */ 49));
+var _album = _interopRequireDefault(__webpack_require__(/*! ./props/album.js */ 50));
+var _alert = _interopRequireDefault(__webpack_require__(/*! ./props/alert.js */ 51));
+var _avatar = _interopRequireDefault(__webpack_require__(/*! ./props/avatar */ 52));
+var _avatarGroup = _interopRequireDefault(__webpack_require__(/*! ./props/avatarGroup */ 53));
+var _backtop = _interopRequireDefault(__webpack_require__(/*! ./props/backtop */ 54));
+var _badge = _interopRequireDefault(__webpack_require__(/*! ./props/badge */ 55));
+var _button = _interopRequireDefault(__webpack_require__(/*! ./props/button */ 56));
+var _calendar = _interopRequireDefault(__webpack_require__(/*! ./props/calendar */ 57));
+var _carKeyboard = _interopRequireDefault(__webpack_require__(/*! ./props/carKeyboard */ 58));
+var _cell = _interopRequireDefault(__webpack_require__(/*! ./props/cell */ 59));
+var _cellGroup = _interopRequireDefault(__webpack_require__(/*! ./props/cellGroup */ 60));
+var _checkbox = _interopRequireDefault(__webpack_require__(/*! ./props/checkbox */ 61));
+var _checkboxGroup = _interopRequireDefault(__webpack_require__(/*! ./props/checkboxGroup */ 62));
+var _circleProgress = _interopRequireDefault(__webpack_require__(/*! ./props/circleProgress */ 63));
+var _code = _interopRequireDefault(__webpack_require__(/*! ./props/code */ 64));
+var _codeInput = _interopRequireDefault(__webpack_require__(/*! ./props/codeInput */ 65));
+var _col = _interopRequireDefault(__webpack_require__(/*! ./props/col */ 66));
+var _collapse = _interopRequireDefault(__webpack_require__(/*! ./props/collapse */ 67));
+var _collapseItem = _interopRequireDefault(__webpack_require__(/*! ./props/collapseItem */ 68));
+var _columnNotice = _interopRequireDefault(__webpack_require__(/*! ./props/columnNotice */ 69));
+var _countDown = _interopRequireDefault(__webpack_require__(/*! ./props/countDown */ 70));
+var _countTo = _interopRequireDefault(__webpack_require__(/*! ./props/countTo */ 71));
+var _datetimePicker = _interopRequireDefault(__webpack_require__(/*! ./props/datetimePicker */ 72));
+var _divider = _interopRequireDefault(__webpack_require__(/*! ./props/divider */ 73));
+var _empty = _interopRequireDefault(__webpack_require__(/*! ./props/empty */ 74));
+var _form = _interopRequireDefault(__webpack_require__(/*! ./props/form */ 75));
+var _formItem = _interopRequireDefault(__webpack_require__(/*! ./props/formItem */ 76));
+var _gap = _interopRequireDefault(__webpack_require__(/*! ./props/gap */ 77));
+var _grid = _interopRequireDefault(__webpack_require__(/*! ./props/grid */ 78));
+var _gridItem = _interopRequireDefault(__webpack_require__(/*! ./props/gridItem */ 79));
+var _icon = _interopRequireDefault(__webpack_require__(/*! ./props/icon */ 80));
+var _image = _interopRequireDefault(__webpack_require__(/*! ./props/image */ 81));
+var _indexAnchor = _interopRequireDefault(__webpack_require__(/*! ./props/indexAnchor */ 82));
+var _indexList = _interopRequireDefault(__webpack_require__(/*! ./props/indexList */ 83));
+var _input = _interopRequireDefault(__webpack_require__(/*! ./props/input */ 84));
+var _keyboard = _interopRequireDefault(__webpack_require__(/*! ./props/keyboard */ 85));
+var _line = _interopRequireDefault(__webpack_require__(/*! ./props/line */ 86));
+var _lineProgress = _interopRequireDefault(__webpack_require__(/*! ./props/lineProgress */ 87));
+var _link = _interopRequireDefault(__webpack_require__(/*! ./props/link */ 88));
+var _list = _interopRequireDefault(__webpack_require__(/*! ./props/list */ 89));
+var _listItem = _interopRequireDefault(__webpack_require__(/*! ./props/listItem */ 90));
+var _loadingIcon = _interopRequireDefault(__webpack_require__(/*! ./props/loadingIcon */ 91));
+var _loadingPage = _interopRequireDefault(__webpack_require__(/*! ./props/loadingPage */ 92));
+var _loadmore = _interopRequireDefault(__webpack_require__(/*! ./props/loadmore */ 93));
+var _modal = _interopRequireDefault(__webpack_require__(/*! ./props/modal */ 94));
+var _navbar = _interopRequireDefault(__webpack_require__(/*! ./props/navbar */ 95));
+var _noNetwork = _interopRequireDefault(__webpack_require__(/*! ./props/noNetwork */ 97));
+var _noticeBar = _interopRequireDefault(__webpack_require__(/*! ./props/noticeBar */ 98));
+var _notify = _interopRequireDefault(__webpack_require__(/*! ./props/notify */ 99));
+var _numberBox = _interopRequireDefault(__webpack_require__(/*! ./props/numberBox */ 100));
+var _numberKeyboard = _interopRequireDefault(__webpack_require__(/*! ./props/numberKeyboard */ 101));
+var _overlay = _interopRequireDefault(__webpack_require__(/*! ./props/overlay */ 102));
+var _parse = _interopRequireDefault(__webpack_require__(/*! ./props/parse */ 103));
+var _picker = _interopRequireDefault(__webpack_require__(/*! ./props/picker */ 104));
+var _popup = _interopRequireDefault(__webpack_require__(/*! ./props/popup */ 105));
+var _radio = _interopRequireDefault(__webpack_require__(/*! ./props/radio */ 106));
+var _radioGroup = _interopRequireDefault(__webpack_require__(/*! ./props/radioGroup */ 107));
+var _rate = _interopRequireDefault(__webpack_require__(/*! ./props/rate */ 108));
+var _readMore = _interopRequireDefault(__webpack_require__(/*! ./props/readMore */ 109));
+var _row = _interopRequireDefault(__webpack_require__(/*! ./props/row */ 110));
+var _rowNotice = _interopRequireDefault(__webpack_require__(/*! ./props/rowNotice */ 111));
+var _scrollList = _interopRequireDefault(__webpack_require__(/*! ./props/scrollList */ 112));
+var _search = _interopRequireDefault(__webpack_require__(/*! ./props/search */ 113));
+var _section = _interopRequireDefault(__webpack_require__(/*! ./props/section */ 114));
+var _skeleton = _interopRequireDefault(__webpack_require__(/*! ./props/skeleton */ 115));
+var _slider = _interopRequireDefault(__webpack_require__(/*! ./props/slider */ 116));
+var _statusBar = _interopRequireDefault(__webpack_require__(/*! ./props/statusBar */ 117));
+var _steps = _interopRequireDefault(__webpack_require__(/*! ./props/steps */ 118));
+var _stepsItem = _interopRequireDefault(__webpack_require__(/*! ./props/stepsItem */ 119));
+var _sticky = _interopRequireDefault(__webpack_require__(/*! ./props/sticky */ 120));
+var _subsection = _interopRequireDefault(__webpack_require__(/*! ./props/subsection */ 121));
+var _swipeAction = _interopRequireDefault(__webpack_require__(/*! ./props/swipeAction */ 122));
+var _swipeActionItem = _interopRequireDefault(__webpack_require__(/*! ./props/swipeActionItem */ 123));
+var _swiper = _interopRequireDefault(__webpack_require__(/*! ./props/swiper */ 124));
+var _swipterIndicator = _interopRequireDefault(__webpack_require__(/*! ./props/swipterIndicator */ 125));
+var _switch2 = _interopRequireDefault(__webpack_require__(/*! ./props/switch */ 126));
+var _tabbar = _interopRequireDefault(__webpack_require__(/*! ./props/tabbar */ 127));
+var _tabbarItem = _interopRequireDefault(__webpack_require__(/*! ./props/tabbarItem */ 128));
+var _tabs = _interopRequireDefault(__webpack_require__(/*! ./props/tabs */ 129));
+var _tag = _interopRequireDefault(__webpack_require__(/*! ./props/tag */ 130));
+var _text = _interopRequireDefault(__webpack_require__(/*! ./props/text */ 131));
+var _textarea = _interopRequireDefault(__webpack_require__(/*! ./props/textarea */ 132));
+var _toast = _interopRequireDefault(__webpack_require__(/*! ./props/toast */ 133));
+var _toolbar = _interopRequireDefault(__webpack_require__(/*! ./props/toolbar */ 134));
+var _tooltip = _interopRequireDefault(__webpack_require__(/*! ./props/tooltip */ 135));
+var _transition = _interopRequireDefault(__webpack_require__(/*! ./props/transition */ 136));
+var _upload = _interopRequireDefault(__webpack_require__(/*! ./props/upload */ 137));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}var
 
 
 color =
@@ -16399,7 +16313,7 @@ _transition.default),
 _upload.default);exports.default = _default;
 
 /***/ }),
-/* 51 */
+/* 49 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/actionSheet.js ***!
   \**************************************************************************************/
@@ -16432,7 +16346,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     round: 0 } };exports.default = _default;
 
 /***/ }),
-/* 52 */
+/* 50 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/album.js ***!
   \********************************************************************************/
@@ -16465,7 +16379,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     showMore: true } };exports.default = _default;
 
 /***/ }),
-/* 53 */
+/* 51 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/alert.js ***!
   \********************************************************************************/
@@ -16495,7 +16409,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     fontSize: 14 } };exports.default = _default;
 
 /***/ }),
-/* 54 */
+/* 52 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/avatar.js ***!
   \*********************************************************************************/
@@ -16531,7 +16445,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     name: '' } };exports.default = _default;
 
 /***/ }),
-/* 55 */
+/* 53 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/avatarGroup.js ***!
   \**************************************************************************************/
@@ -16562,7 +16476,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     extraValue: 0 } };exports.default = _default;
 
 /***/ }),
-/* 56 */
+/* 54 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/backtop.js ***!
   \**********************************************************************************/
@@ -16596,7 +16510,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
         fontSize: '19px' };} } };exports.default = _default;
 
 /***/ }),
-/* 57 */
+/* 55 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/badge.js ***!
   \********************************************************************************/
@@ -16631,7 +16545,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     absolute: false } };exports.default = _default;
 
 /***/ }),
-/* 58 */
+/* 56 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/button.js ***!
   \*********************************************************************************/
@@ -16681,7 +16595,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     color: '' } };exports.default = _default;
 
 /***/ }),
-/* 59 */
+/* 57 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/calendar.js ***!
   \***********************************************************************************/
@@ -16731,7 +16645,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     monthNum: 3 } };exports.default = _default;
 
 /***/ }),
-/* 60 */
+/* 58 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/carKeyboard.js ***!
   \**************************************************************************************/
@@ -16754,7 +16668,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     random: false } };exports.default = _default;
 
 /***/ }),
-/* 61 */
+/* 59 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/cell.js ***!
   \*******************************************************************************/
@@ -16797,7 +16711,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     name: '' } };exports.default = _default;
 
 /***/ }),
-/* 62 */
+/* 60 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/cellGroup.js ***!
   \************************************************************************************/
@@ -16822,7 +16736,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     customStyle: {} } };exports.default = _default;
 
 /***/ }),
-/* 63 */
+/* 61 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/checkbox.js ***!
   \***********************************************************************************/
@@ -16857,7 +16771,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     labelDisabled: '' } };exports.default = _default;
 
 /***/ }),
-/* 64 */
+/* 62 */
 /*!****************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/checkboxGroup.js ***!
   \****************************************************************************************/
@@ -16894,7 +16808,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     borderBottom: false } };exports.default = _default;
 
 /***/ }),
-/* 65 */
+/* 63 */
 /*!*****************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/circleProgress.js ***!
   \*****************************************************************************************/
@@ -16917,7 +16831,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     percentage: 30 } };exports.default = _default;
 
 /***/ }),
-/* 66 */
+/* 64 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/code.js ***!
   \*******************************************************************************/
@@ -16946,7 +16860,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     uniqueKey: '' } };exports.default = _default;
 
 /***/ }),
-/* 67 */
+/* 65 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/codeInput.js ***!
   \************************************************************************************/
@@ -16982,7 +16896,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     disabledDot: true } };exports.default = _default;
 
 /***/ }),
-/* 68 */
+/* 66 */
 /*!******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/col.js ***!
   \******************************************************************************/
@@ -17009,7 +16923,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     textAlign: 'left' } };exports.default = _default;
 
 /***/ }),
-/* 69 */
+/* 67 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/collapse.js ***!
   \***********************************************************************************/
@@ -17034,7 +16948,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     border: true } };exports.default = _default;
 
 /***/ }),
-/* 70 */
+/* 68 */
 /*!***************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/collapseItem.js ***!
   \***************************************************************************************/
@@ -17067,7 +16981,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     duration: 300 } };exports.default = _default;
 
 /***/ }),
-/* 71 */
+/* 69 */
 /*!***************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/columnNotice.js ***!
   \***************************************************************************************/
@@ -17099,7 +17013,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     disableTouch: true } };exports.default = _default;
 
 /***/ }),
-/* 72 */
+/* 70 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/countDown.js ***!
   \************************************************************************************/
@@ -17125,7 +17039,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     millisecond: false } };exports.default = _default;
 
 /***/ }),
-/* 73 */
+/* 71 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/countTo.js ***!
   \**********************************************************************************/
@@ -17158,7 +17072,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     separator: '' } };exports.default = _default;
 
 /***/ }),
-/* 74 */
+/* 72 */
 /*!*****************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/datetimePicker.js ***!
   \*****************************************************************************************/
@@ -17202,7 +17116,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     defaultIndex: function defaultIndex() {return [];} } };exports.default = _default;
 
 /***/ }),
-/* 75 */
+/* 73 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/divider.js ***!
   \**********************************************************************************/
@@ -17232,7 +17146,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     lineColor: '#dcdfe6' } };exports.default = _default;
 
 /***/ }),
-/* 76 */
+/* 74 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/empty.js ***!
   \********************************************************************************/
@@ -17265,7 +17179,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     marginTop: 0 } };exports.default = _default;
 
 /***/ }),
-/* 77 */
+/* 75 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/form.js ***!
   \*******************************************************************************/
@@ -17295,7 +17209,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     labelStyle: function labelStyle() {return {};} } };exports.default = _default;
 
 /***/ }),
-/* 78 */
+/* 76 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/formItem.js ***!
   \***********************************************************************************/
@@ -17325,7 +17239,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     leftIconStyle: '' } };exports.default = _default;
 
 /***/ }),
-/* 79 */
+/* 77 */
 /*!******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/gap.js ***!
   \******************************************************************************/
@@ -17352,7 +17266,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     customStyle: {} } };exports.default = _default;
 
 /***/ }),
-/* 80 */
+/* 78 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/grid.js ***!
   \*******************************************************************************/
@@ -17377,7 +17291,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     align: 'left' } };exports.default = _default;
 
 /***/ }),
-/* 81 */
+/* 79 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/gridItem.js ***!
   \***********************************************************************************/
@@ -17401,7 +17315,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     bgColor: 'transparent' } };exports.default = _default;
 
 /***/ }),
-/* 82 */
+/* 80 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/icon.js ***!
   \*******************************************************************************/
@@ -17418,7 +17332,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
-var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 49));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} /*
+var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 47));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} /*
                                                                                                                                                           * @Author       : LQ
                                                                                                                                                           * @Description  :
                                                                                                                                                           * @version      : 1.0
@@ -17445,7 +17359,7 @@ var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 49));f
     stop: false } };exports.default = _default;
 
 /***/ }),
-/* 83 */
+/* 81 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/image.js ***!
   \********************************************************************************/
@@ -17483,7 +17397,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     bgColor: '#f3f4f6' } };exports.default = _default;
 
 /***/ }),
-/* 84 */
+/* 82 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/indexAnchor.js ***!
   \**************************************************************************************/
@@ -17510,7 +17424,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     height: 32 } };exports.default = _default;
 
 /***/ }),
-/* 85 */
+/* 83 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/indexList.js ***!
   \************************************************************************************/
@@ -17537,7 +17451,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     customNavHeight: 0 } };exports.default = _default;
 
 /***/ }),
-/* 86 */
+/* 84 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/input.js ***!
   \********************************************************************************/
@@ -17593,7 +17507,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     formatter: null } };exports.default = _default;
 
 /***/ }),
-/* 87 */
+/* 85 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/keyboard.js ***!
   \***********************************************************************************/
@@ -17631,7 +17545,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     autoChange: false } };exports.default = _default;
 
 /***/ }),
-/* 88 */
+/* 86 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/line.js ***!
   \*******************************************************************************/
@@ -17659,7 +17573,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     dashed: false } };exports.default = _default;
 
 /***/ }),
-/* 89 */
+/* 87 */
 /*!***************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/lineProgress.js ***!
   \***************************************************************************************/
@@ -17686,7 +17600,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     height: 12 } };exports.default = _default;
 
 /***/ }),
-/* 90 */
+/* 88 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/link.js ***!
   \*******************************************************************************/
@@ -17703,7 +17617,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
-var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 49));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} /*
+var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 47));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} /*
                                                                                                                                                           * @Author       : LQ
                                                                                                                                                           * @Description  :
                                                                                                                                                           * @version      : 1.0
@@ -17720,7 +17634,7 @@ var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 49));f
     text: '' } };exports.default = _default;
 
 /***/ }),
-/* 91 */
+/* 89 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/list.js ***!
   \*******************************************************************************/
@@ -17756,7 +17670,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     preLoadScreen: 1 } };exports.default = _default;
 
 /***/ }),
-/* 92 */
+/* 90 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/listItem.js ***!
   \***********************************************************************************/
@@ -17779,7 +17693,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     anchor: '' } };exports.default = _default;
 
 /***/ }),
-/* 93 */
+/* 91 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/loadingIcon.js ***!
   \**************************************************************************************/
@@ -17796,7 +17710,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
-var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 49));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} /*
+var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 47));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} /*
                                                                                                                                                           * @Author       : LQ
                                                                                                                                                           * @Description  :
                                                                                                                                                           * @version      : 1.0
@@ -17817,7 +17731,7 @@ var _config = _interopRequireDefault(__webpack_require__(/*! ../config */ 49));f
     inactiveColor: '' } };exports.default = _default;
 
 /***/ }),
-/* 94 */
+/* 92 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/loadingPage.js ***!
   \**************************************************************************************/
@@ -17847,7 +17761,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     loadingColor: '#C8C8C8' } };exports.default = _default;
 
 /***/ }),
-/* 95 */
+/* 93 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/loadmore.js ***!
   \***********************************************************************************/
@@ -17884,7 +17798,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     line: false } };exports.default = _default;
 
 /***/ }),
-/* 96 */
+/* 94 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/modal.js ***!
   \********************************************************************************/
@@ -17922,7 +17836,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     confirmButtonShape: '' } };exports.default = _default;
 
 /***/ }),
-/* 97 */
+/* 95 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/navbar.js ***!
   \*********************************************************************************/
@@ -17939,7 +17853,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
-var _color = _interopRequireDefault(__webpack_require__(/*! ../color */ 98));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} /*
+var _color = _interopRequireDefault(__webpack_require__(/*! ../color */ 96));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} /*
                                                                                                                                                         * @Author       : LQ
                                                                                                                                                         * @Description  :
                                                                                                                                                         * @version      : 1.0
@@ -17961,7 +17875,7 @@ var _color = _interopRequireDefault(__webpack_require__(/*! ../color */ 98));fun
     titleStyle: '' } };exports.default = _default;
 
 /***/ }),
-/* 98 */
+/* 96 */
 /*!**************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/color.js ***!
   \**************************************************************************/
@@ -17988,7 +17902,7 @@ var color = {
 color;exports.default = _default;
 
 /***/ }),
-/* 99 */
+/* 97 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/noNetwork.js ***!
   \************************************************************************************/
@@ -18013,7 +17927,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     image: 'data:image/png;base64,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' } };exports.default = _default;
 
 /***/ }),
-/* 100 */
+/* 98 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/noticeBar.js ***!
   \************************************************************************************/
@@ -18048,7 +17962,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     linkType: 'navigateTo' } };exports.default = _default;
 
 /***/ }),
-/* 101 */
+/* 99 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/notify.js ***!
   \*********************************************************************************/
@@ -18078,7 +17992,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     safeAreaInsetTop: false } };exports.default = _default;
 
 /***/ }),
-/* 102 */
+/* 100 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/numberBox.js ***!
   \************************************************************************************/
@@ -18121,7 +18035,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     iconStyle: '' } };exports.default = _default;
 
 /***/ }),
-/* 103 */
+/* 101 */
 /*!*****************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/numberKeyboard.js ***!
   \*****************************************************************************************/
@@ -18146,7 +18060,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     random: false } };exports.default = _default;
 
 /***/ }),
-/* 104 */
+/* 102 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/overlay.js ***!
   \**********************************************************************************/
@@ -18172,7 +18086,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     opacity: 0.5 } };exports.default = _default;
 
 /***/ }),
-/* 105 */
+/* 103 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/parse.js ***!
   \********************************************************************************/
@@ -18202,7 +18116,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     showImgMenu: true } };exports.default = _default;
 
 /***/ }),
-/* 106 */
+/* 104 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/picker.js ***!
   \*********************************************************************************/
@@ -18240,7 +18154,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     immediateChange: false } };exports.default = _default;
 
 /***/ }),
-/* 107 */
+/* 105 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/popup.js ***!
   \********************************************************************************/
@@ -18277,7 +18191,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     overlayOpacity: 0.5 } };exports.default = _default;
 
 /***/ }),
-/* 108 */
+/* 106 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/radio.js ***!
   \********************************************************************************/
@@ -18312,7 +18226,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     placement: '' } };exports.default = _default;
 
 /***/ }),
-/* 109 */
+/* 107 */
 /*!*************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/radioGroup.js ***!
   \*************************************************************************************/
@@ -18350,7 +18264,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     iconPlacement: 'left' } };exports.default = _default;
 
 /***/ }),
-/* 110 */
+/* 108 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/rate.js ***!
   \*******************************************************************************/
@@ -18384,7 +18298,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     touchable: true } };exports.default = _default;
 
 /***/ }),
-/* 111 */
+/* 109 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/readMore.js ***!
   \***********************************************************************************/
@@ -18414,7 +18328,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     name: '' } };exports.default = _default;
 
 /***/ }),
-/* 112 */
+/* 110 */
 /*!******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/row.js ***!
   \******************************************************************************/
@@ -18439,7 +18353,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     align: 'center' } };exports.default = _default;
 
 /***/ }),
-/* 113 */
+/* 111 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/rowNotice.js ***!
   \************************************************************************************/
@@ -18468,7 +18382,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     speed: 80 } };exports.default = _default;
 
 /***/ }),
-/* 114 */
+/* 112 */
 /*!*************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/scrollList.js ***!
   \*************************************************************************************/
@@ -18496,7 +18410,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     indicatorStyle: '' } };exports.default = _default;
 
 /***/ }),
-/* 115 */
+/* 113 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/search.js ***!
   \*********************************************************************************/
@@ -18541,7 +18455,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     label: null } };exports.default = _default;
 
 /***/ }),
-/* 116 */
+/* 114 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/section.js ***!
   \**********************************************************************************/
@@ -18573,7 +18487,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     arrow: true } };exports.default = _default;
 
 /***/ }),
-/* 117 */
+/* 115 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/skeleton.js ***!
   \***********************************************************************************/
@@ -18606,7 +18520,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     avatarShape: 'circle' } };exports.default = _default;
 
 /***/ }),
-/* 118 */
+/* 116 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/slider.js ***!
   \*********************************************************************************/
@@ -18639,7 +18553,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     blockStyle: function blockStyle() {} } };exports.default = _default;
 
 /***/ }),
-/* 119 */
+/* 117 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/statusBar.js ***!
   \************************************************************************************/
@@ -18662,7 +18576,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     bgColor: 'transparent' } };exports.default = _default;
 
 /***/ }),
-/* 120 */
+/* 118 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/steps.js ***!
   \********************************************************************************/
@@ -18691,7 +18605,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     dot: false } };exports.default = _default;
 
 /***/ }),
-/* 121 */
+/* 119 */
 /*!************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/stepsItem.js ***!
   \************************************************************************************/
@@ -18717,7 +18631,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     error: false } };exports.default = _default;
 
 /***/ }),
-/* 122 */
+/* 120 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/sticky.js ***!
   \*********************************************************************************/
@@ -18745,7 +18659,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     index: '' } };exports.default = _default;
 
 /***/ }),
-/* 123 */
+/* 121 */
 /*!*************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/subsection.js ***!
   \*************************************************************************************/
@@ -18776,7 +18690,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     keyName: 'name' } };exports.default = _default;
 
 /***/ }),
-/* 124 */
+/* 122 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/swipeAction.js ***!
   \**************************************************************************************/
@@ -18799,7 +18713,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     autoClose: true } };exports.default = _default;
 
 /***/ }),
-/* 125 */
+/* 123 */
 /*!******************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/swipeActionItem.js ***!
   \******************************************************************************************/
@@ -18828,7 +18742,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     duration: 300 } };exports.default = _default;
 
 /***/ }),
-/* 126 */
+/* 124 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/swiper.js ***!
   \*********************************************************************************/
@@ -18874,7 +18788,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     showTitle: false } };exports.default = _default;
 
 /***/ }),
-/* 127 */
+/* 125 */
 /*!*******************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/swipterIndicator.js ***!
   \*******************************************************************************************/
@@ -18901,7 +18815,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     indicatorMode: 'line' } };exports.default = _default;
 
 /***/ }),
-/* 128 */
+/* 126 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/switch.js ***!
   \*********************************************************************************/
@@ -18933,7 +18847,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     space: 0 } };exports.default = _default;
 
 /***/ }),
-/* 129 */
+/* 127 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/tabbar.js ***!
   \*********************************************************************************/
@@ -18963,7 +18877,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     placeholder: true } };exports.default = _default;
 
 /***/ }),
-/* 130 */
+/* 128 */
 /*!*************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/tabbarItem.js ***!
   \*************************************************************************************/
@@ -18991,7 +18905,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     badgeStyle: 'top: 6px;right:2px;' } };exports.default = _default;
 
 /***/ }),
-/* 131 */
+/* 129 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/tabs.js ***!
   \*******************************************************************************/
@@ -19030,7 +18944,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     keyName: 'name' } };exports.default = _default;
 
 /***/ }),
-/* 132 */
+/* 130 */
 /*!******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/tag.js ***!
   \******************************************************************************/
@@ -19067,7 +18981,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     icon: '' } };exports.default = _default;
 
 /***/ }),
-/* 133 */
+/* 131 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/text.js ***!
   \*******************************************************************************/
@@ -19112,7 +19026,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     wordWrap: 'normal' } };exports.default = _default;
 
 /***/ }),
-/* 134 */
+/* 132 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/textarea.js ***!
   \***********************************************************************************/
@@ -19156,7 +19070,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     formatter: null } };exports.default = _default;
 
 /***/ }),
-/* 135 */
+/* 133 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/toast.js ***!
   \********************************************************************************/
@@ -19193,7 +19107,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     back: false } };exports.default = _default;
 
 /***/ }),
-/* 136 */
+/* 134 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/toolbar.js ***!
   \**********************************************************************************/
@@ -19221,7 +19135,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     title: '' } };exports.default = _default;
 
 /***/ }),
-/* 137 */
+/* 135 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/tooltip.js ***!
   \**********************************************************************************/
@@ -19254,7 +19168,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     showToast: true } };exports.default = _default;
 
 /***/ }),
-/* 138 */
+/* 136 */
 /*!*************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/transition.js ***!
   \*************************************************************************************/
@@ -19280,7 +19194,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     timingFunction: 'ease-out' } };exports.default = _default;
 
 /***/ }),
-/* 139 */
+/* 137 */
 /*!*********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/props/upload.js ***!
   \*********************************************************************************/
@@ -19324,7 +19238,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     previewImage: true } };exports.default = _default;
 
 /***/ }),
-/* 140 */
+/* 138 */
 /*!***************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/config/zIndex.js ***!
   \***************************************************************************/
@@ -19353,7 +19267,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
   indexListSticky: 965 };exports.default = _default;
 
 /***/ }),
-/* 141 */
+/* 139 */
 /*!*******************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/libs/function/platform.js ***!
   \*******************************************************************************/
@@ -19438,11 +19352,11 @@ platform = 'mp';var _default =
 platform;exports.default = _default;
 
 /***/ }),
+/* 140 */,
+/* 141 */,
 /* 142 */,
 /* 143 */,
-/* 144 */,
-/* 145 */,
-/* 146 */
+/* 144 */
 /*!*****************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/static/imgs/music/pause_icon.png ***!
   \*****************************************************************/
@@ -19452,7 +19366,7 @@ platform;exports.default = _default;
 module.exports = "data:image/png;base64,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"
 
 /***/ }),
-/* 147 */
+/* 145 */
 /*!****************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/static/imgs/music/play_icon.png ***!
   \****************************************************************/
@@ -19462,8 +19376,45 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADD
 module.exports = "data:image/png;base64,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"
 
 /***/ }),
-/* 148 */,
-/* 149 */,
+/* 146 */,
+/* 147 */,
+/* 148 */
+/*!************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/uni-cloud/dist/index.js ***!
+  \************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global, uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 13));var _uniI18n = __webpack_require__(/*! @dcloudio/uni-i18n */ 4);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _iterableToArray(iter) {if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) return _arrayLikeToArray(arr);}function _createForOfIteratorHelper(o, allowArrayLike) {var it;if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {if (it) o = it;var i = 0;var F = function F() {};return { s: F, n: function n() {if (i >= o.length) return { done: true };return { done: false, value: o[i++] };}, e: function e(_e24) {throw _e24;}, f: F };}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}var normalCompletion = true,didErr = false,err;return { s: function s() {it = o[Symbol.iterator]();}, n: function n() {var step = it.next();normalCompletion = step.done;return step;}, e: function e(_e25) {didErr = true;err = _e25;}, f: function f() {try {if (!normalCompletion && it.return != null) it.return();} finally {if (didErr) throw err;}} };}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}function _defineProperties(target, props) {for (var i = 0; i < props.length; i++) {var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);}}function _createClass(Constructor, protoProps, staticProps) {if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;}function ownKeys(object, enumerableOnly) {var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {return Object.getOwnPropertyDescriptor(object, sym).enumerable;});keys.push.apply(keys, symbols);}return keys;}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {ownKeys(Object(source), true).forEach(function (key) {_defineProperty(target, key, source[key]);});} else if (Object.getOwnPropertyDescriptors) {Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));} else {ownKeys(Object(source)).forEach(function (key) {Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));});}}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}function _classCallCheck(instance, Constructor) {if (!(instance instanceof Constructor)) {throw new TypeError("Cannot call a class as a function");}}function _inherits(subClass, superClass) {if (typeof superClass !== "function" && superClass !== null) {throw new TypeError("Super expression must either be null or a function");}subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } });if (superClass) _setPrototypeOf(subClass, superClass);}function _createSuper(Derived) {var hasNativeReflectConstruct = _isNativeReflectConstruct();return function _createSuperInternal() {var Super = _getPrototypeOf(Derived),result;if (hasNativeReflectConstruct) {var NewTarget = _getPrototypeOf(this).constructor;result = Reflect.construct(Super, arguments, NewTarget);} else {result = Super.apply(this, arguments);}return _possibleConstructorReturn(this, result);};}function _possibleConstructorReturn(self, call) {if (call && (typeof call === "object" || typeof call === "function")) {return call;}return _assertThisInitialized(self);}function _assertThisInitialized(self) {if (self === void 0) {throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return self;}function _wrapNativeSuper(Class) {var _cache = typeof Map === "function" ? new Map() : undefined;_wrapNativeSuper = function _wrapNativeSuper(Class) {if (Class === null || !_isNativeFunction(Class)) return Class;if (typeof Class !== "function") {throw new TypeError("Super expression must either be null or a function");}if (typeof _cache !== "undefined") {if (_cache.has(Class)) return _cache.get(Class);_cache.set(Class, Wrapper);}function Wrapper() {return _construct(Class, arguments, _getPrototypeOf(this).constructor);}Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } });return _setPrototypeOf(Wrapper, Class);};return _wrapNativeSuper(Class);}function _construct(Parent, args, Class) {if (_isNativeReflectConstruct()) {_construct = Reflect.construct;} else {_construct = function _construct(Parent, args, Class) {var a = [null];a.push.apply(a, args);var Constructor = Function.bind.apply(Parent, a);var instance = new Constructor();if (Class) _setPrototypeOf(instance, Class.prototype);return instance;};}return _construct.apply(null, arguments);}function _isNativeReflectConstruct() {if (typeof Reflect === "undefined" || !Reflect.construct) return false;if (Reflect.construct.sham) return false;if (typeof Proxy === "function") return true;try {Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));return true;} catch (e) {return false;}}function _isNativeFunction(fn) {return Function.toString.call(fn).indexOf("[native code]") !== -1;}function _setPrototypeOf(o, p) {_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {o.__proto__ = p;return o;};return _setPrototypeOf(o, p);}function _getPrototypeOf(o) {_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {return o.__proto__ || Object.getPrototypeOf(o);};return _getPrototypeOf(o);}"undefined" != typeof globalThis ? globalThis : "undefined" != typeof window ? window : "undefined" != typeof global ? global : "undefined" != typeof self && self;function t(e) {return e && e.__esModule && Object.prototype.hasOwnProperty.call(e, "default") ? e.default : e;}function n(e, t, n) {return e(n = { path: t, exports: {}, require: function require(e, t) {return function () {throw new Error("Dynamic requires are not currently supported by @rollup/plugin-commonjs");}(null == t && n.path);} }, n.exports), n.exports;}var s = n(function (e, t) {var n;e.exports = (n = n || function (e, t) {var n = Object.create || function () {function e() {}return function (t) {var n;return e.prototype = t, n = new e(), e.prototype = null, n;};}(),s = {},r = s.lib = {},o = r.Base = { extend: function extend(e) {var t = n(this);return e && t.mixIn(e), t.hasOwnProperty("init") && this.init !== t.init || (t.init = function () {t.$super.init.apply(this, arguments);}), t.init.prototype = t, t.$super = this, t;}, create: function create() {var e = this.extend();return e.init.apply(e, arguments), e;}, init: function init() {}, mixIn: function mixIn(e) {for (var t in e) {e.hasOwnProperty(t) && (this[t] = e[t]);}e.hasOwnProperty("toString") && (this.toString = e.toString);}, clone: function clone() {return this.init.prototype.extend(this);} },i = r.WordArray = o.extend({ init: function init(e, n) {e = this.words = e || [], this.sigBytes = n != t ? n : 4 * e.length;}, toString: function toString(e) {return (e || c).stringify(this);}, concat: function concat(e) {var t = this.words,n = e.words,s = this.sigBytes,r = e.sigBytes;if (this.clamp(), s % 4) for (var o = 0; o < r; o++) {var i = n[o >>> 2] >>> 24 - o % 4 * 8 & 255;t[s + o >>> 2] |= i << 24 - (s + o) % 4 * 8;} else for (o = 0; o < r; o += 4) {t[s + o >>> 2] = n[o >>> 2];}return this.sigBytes += r, this;}, clamp: function clamp() {var t = this.words,n = this.sigBytes;t[n >>> 2] &= 4294967295 << 32 - n % 4 * 8, t.length = e.ceil(n / 4);}, clone: function clone() {var e = o.clone.call(this);return e.words = this.words.slice(0), e;}, random: function random(t) {for (var n, s = [], r = function r(t) {t = t;var n = 987654321,s = 4294967295;return function () {var r = ((n = 36969 * (65535 & n) + (n >> 16) & s) << 16) + (t = 18e3 * (65535 & t) + (t >> 16) & s) & s;return r /= 4294967296, (r += .5) * (e.random() > .5 ? 1 : -1);};}, o = 0; o < t; o += 4) {var a = r(4294967296 * (n || e.random()));n = 987654071 * a(), s.push(4294967296 * a() | 0);}return new i.init(s, t);} }),a = s.enc = {},c = a.Hex = { stringify: function stringify(e) {for (var t = e.words, n = e.sigBytes, s = [], r = 0; r < n; r++) {var o = t[r >>> 2] >>> 24 - r % 4 * 8 & 255;s.push((o >>> 4).toString(16)), s.push((15 & o).toString(16));}return s.join("");}, parse: function parse(e) {for (var t = e.length, n = [], s = 0; s < t; s += 2) {n[s >>> 3] |= parseInt(e.substr(s, 2), 16) << 24 - s % 8 * 4;}return new i.init(n, t / 2);} },u = a.Latin1 = { stringify: function stringify(e) {for (var t = e.words, n = e.sigBytes, s = [], r = 0; r < n; r++) {var o = t[r >>> 2] >>> 24 - r % 4 * 8 & 255;s.push(String.fromCharCode(o));}return s.join("");}, parse: function parse(e) {for (var t = e.length, n = [], s = 0; s < t; s++) {n[s >>> 2] |= (255 & e.charCodeAt(s)) << 24 - s % 4 * 8;}return new i.init(n, t);} },h = a.Utf8 = { stringify: function stringify(e) {try {return decodeURIComponent(escape(u.stringify(e)));} catch (e) {throw new Error("Malformed UTF-8 data");}}, parse: function parse(e) {return u.parse(unescape(encodeURIComponent(e)));} },l = r.BufferedBlockAlgorithm = o.extend({ reset: function reset() {this._data = new i.init(), this._nDataBytes = 0;}, _append: function _append(e) {"string" == typeof e && (e = h.parse(e)), this._data.concat(e), this._nDataBytes += e.sigBytes;}, _process: function _process(t) {var n = this._data,s = n.words,r = n.sigBytes,o = this.blockSize,a = r / (4 * o),c = (a = t ? e.ceil(a) : e.max((0 | a) - this._minBufferSize, 0)) * o,u = e.min(4 * c, r);if (c) {for (var h = 0; h < c; h += o) {this._doProcessBlock(s, h);}var l = s.splice(0, c);n.sigBytes -= u;}return new i.init(l, u);}, clone: function clone() {var e = o.clone.call(this);return e._data = this._data.clone(), e;}, _minBufferSize: 0 });r.Hasher = l.extend({ cfg: o.extend(), init: function init(e) {this.cfg = this.cfg.extend(e), this.reset();}, reset: function reset() {l.reset.call(this), this._doReset();}, update: function update(e) {return this._append(e), this._process(), this;}, finalize: function finalize(e) {return e && this._append(e), this._doFinalize();}, blockSize: 16, _createHelper: function _createHelper(e) {return function (t, n) {return new e.init(n).finalize(t);};}, _createHmacHelper: function _createHmacHelper(e) {return function (t, n) {return new d.HMAC.init(e, n).finalize(t);};} });var d = s.algo = {};return s;}(Math), n);}),r = (n(function (e, t) {var n;e.exports = (n = s, function (e) {var t = n,s = t.lib,r = s.WordArray,o = s.Hasher,i = t.algo,a = [];!function () {for (var t = 0; t < 64; t++) {a[t] = 4294967296 * e.abs(e.sin(t + 1)) | 0;}}();var c = i.MD5 = o.extend({ _doReset: function _doReset() {this._hash = new r.init([1732584193, 4023233417, 2562383102, 271733878]);}, _doProcessBlock: function _doProcessBlock(e, t) {for (var n = 0; n < 16; n++) {var s = t + n,r = e[s];e[s] = 16711935 & (r << 8 | r >>> 24) | 4278255360 & (r << 24 | r >>> 8);}var o = this._hash.words,i = e[t + 0],c = e[t + 1],f = e[t + 2],p = e[t + 3],g = e[t + 4],m = e[t + 5],y = e[t + 6],_ = e[t + 7],w = e[t + 8],k = e[t + 9],S = e[t + 10],v = e[t + 11],T = e[t + 12],A = e[t + 13],P = e[t + 14],I = e[t + 15],b = o[0],E = o[1],O = o[2],C = o[3];b = u(b, E, O, C, i, 7, a[0]), C = u(C, b, E, O, c, 12, a[1]), O = u(O, C, b, E, f, 17, a[2]), E = u(E, O, C, b, p, 22, a[3]), b = u(b, E, O, C, g, 7, a[4]), C = u(C, b, E, O, m, 12, a[5]), O = u(O, C, b, E, y, 17, a[6]), E = u(E, O, C, b, _, 22, a[7]), b = u(b, E, O, C, w, 7, a[8]), C = u(C, b, E, O, k, 12, a[9]), O = u(O, C, b, E, S, 17, a[10]), E = u(E, O, C, b, v, 22, a[11]), b = u(b, E, O, C, T, 7, a[12]), C = u(C, b, E, O, A, 12, a[13]), O = u(O, C, b, E, P, 17, a[14]), b = h(b, E = u(E, O, C, b, I, 22, a[15]), O, C, c, 5, a[16]), C = h(C, b, E, O, y, 9, a[17]), O = h(O, C, b, E, v, 14, a[18]), E = h(E, O, C, b, i, 20, a[19]), b = h(b, E, O, C, m, 5, a[20]), C = h(C, b, E, O, S, 9, a[21]), O = h(O, C, b, E, I, 14, a[22]), E = h(E, O, C, b, g, 20, a[23]), b = h(b, E, O, C, k, 5, a[24]), C = h(C, b, E, O, P, 9, a[25]), O = h(O, C, b, E, p, 14, a[26]), E = h(E, O, C, b, w, 20, a[27]), b = h(b, E, O, C, A, 5, a[28]), C = h(C, b, E, O, f, 9, a[29]), O = h(O, C, b, E, _, 14, a[30]), b = l(b, E = h(E, O, C, b, T, 20, a[31]), O, C, m, 4, a[32]), C = l(C, b, E, O, w, 11, a[33]), O = l(O, C, b, E, v, 16, a[34]), E = l(E, O, C, b, P, 23, a[35]), b = l(b, E, O, C, c, 4, a[36]), C = l(C, b, E, O, g, 11, a[37]), O = l(O, C, b, E, _, 16, a[38]), E = l(E, O, C, b, S, 23, a[39]), b = l(b, E, O, C, A, 4, a[40]), C = l(C, b, E, O, i, 11, a[41]), O = l(O, C, b, E, p, 16, a[42]), E = l(E, O, C, b, y, 23, a[43]), b = l(b, E, O, C, k, 4, a[44]), C = l(C, b, E, O, T, 11, a[45]), O = l(O, C, b, E, I, 16, a[46]), b = d(b, E = l(E, O, C, b, f, 23, a[47]), O, C, i, 6, a[48]), C = d(C, b, E, O, _, 10, a[49]), O = d(O, C, b, E, P, 15, a[50]), E = d(E, O, C, b, m, 21, a[51]), b = d(b, E, O, C, T, 6, a[52]), C = d(C, b, E, O, p, 10, a[53]), O = d(O, C, b, E, S, 15, a[54]), E = d(E, O, C, b, c, 21, a[55]), b = d(b, E, O, C, w, 6, a[56]), C = d(C, b, E, O, I, 10, a[57]), O = d(O, C, b, E, y, 15, a[58]), E = d(E, O, C, b, A, 21, a[59]), b = d(b, E, O, C, g, 6, a[60]), C = d(C, b, E, O, v, 10, a[61]), O = d(O, C, b, E, f, 15, a[62]), E = d(E, O, C, b, k, 21, a[63]), o[0] = o[0] + b | 0, o[1] = o[1] + E | 0, o[2] = o[2] + O | 0, o[3] = o[3] + C | 0;}, _doFinalize: function _doFinalize() {var t = this._data,n = t.words,s = 8 * this._nDataBytes,r = 8 * t.sigBytes;n[r >>> 5] |= 128 << 24 - r % 32;var o = e.floor(s / 4294967296),i = s;n[15 + (r + 64 >>> 9 << 4)] = 16711935 & (o << 8 | o >>> 24) | 4278255360 & (o << 24 | o >>> 8), n[14 + (r + 64 >>> 9 << 4)] = 16711935 & (i << 8 | i >>> 24) | 4278255360 & (i << 24 | i >>> 8), t.sigBytes = 4 * (n.length + 1), this._process();for (var a = this._hash, c = a.words, u = 0; u < 4; u++) {var h = c[u];c[u] = 16711935 & (h << 8 | h >>> 24) | 4278255360 & (h << 24 | h >>> 8);}return a;}, clone: function clone() {var e = o.clone.call(this);return e._hash = this._hash.clone(), e;} });function u(e, t, n, s, r, o, i) {var a = e + (t & n | ~t & s) + r + i;return (a << o | a >>> 32 - o) + t;}function h(e, t, n, s, r, o, i) {var a = e + (t & s | n & ~s) + r + i;return (a << o | a >>> 32 - o) + t;}function l(e, t, n, s, r, o, i) {var a = e + (t ^ n ^ s) + r + i;return (a << o | a >>> 32 - o) + t;}function d(e, t, n, s, r, o, i) {var a = e + (n ^ (t | ~s)) + r + i;return (a << o | a >>> 32 - o) + t;}t.MD5 = o._createHelper(c), t.HmacMD5 = o._createHmacHelper(c);}(Math), n.MD5);}), n(function (e, t) {var n, r, o;e.exports = (r = (n = s).lib.Base, o = n.enc.Utf8, void (n.algo.HMAC = r.extend({ init: function init(e, t) {e = this._hasher = new e.init(), "string" == typeof t && (t = o.parse(t));var n = e.blockSize,s = 4 * n;t.sigBytes > s && (t = e.finalize(t)), t.clamp();for (var r = this._oKey = t.clone(), i = this._iKey = t.clone(), a = r.words, c = i.words, u = 0; u < n; u++) {a[u] ^= 1549556828, c[u] ^= 909522486;}r.sigBytes = i.sigBytes = s, this.reset();}, reset: function reset() {var e = this._hasher;e.reset(), e.update(this._iKey);}, update: function update(e) {return this._hasher.update(e), this;}, finalize: function finalize(e) {var t = this._hasher,n = t.finalize(e);return t.reset(), t.finalize(this._oKey.clone().concat(n));} })));}), n(function (e, t) {e.exports = s.HmacMD5;}));function o(e) {return Object.prototype.toString.call(e).slice(8, -1).toLowerCase();}function i(e) {return "object" === o(e);}var a = /*#__PURE__*/function (_Error) {_inherits(a, _Error);var _super = _createSuper(a);function a(e, t) {var _this;_classCallCheck(this, a);_this = _super.call(this, e), _this.code = t;return _this;}return a;}( /*#__PURE__*/_wrapNativeSuper(Error));function c(e) {return e && "string" == typeof e ? JSON.parse(e) : e;}var u = "development" === "development",h = "mp-weixin",l = c({
+    "address": [
+        "127.0.0.1",
+        "169.254.108.126",
+        "192.168.4.215"
+    ],
+    "debugPort": 12965,
+    "initialLaunchType": "local",
+    "servePort": 12966,
+    "skipFiles": [
+        "<node_internals>/**/*.js",
+        "E:/hbuildx/HBuilderX.3.3.3.20211225.full/HBuilderX/plugins/unicloud/**/*.js"
+    ]
+}
+),d = c([{"provider":"aliyun","spaceName":"my-player","spaceId":"c61844fe-50ca-4fca-80d6-0a5be199fe70","clientSecret":"FTCWS5fo+O/7lWum6cWPBA==","endpoint":"https://api.bspapp.com"}]),f = true;var p = "";try {{var _e2 = __webpack_require__(/*! uni-stat-config */ 149).default || __webpack_require__(/*! uni-stat-config */ 149);p = _e2.appid;}} catch (e) {}var g = {};function m(e) {var t = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};var n, s;return n = g, s = e, Object.prototype.hasOwnProperty.call(n, s) || (g[e] = t), g[e];}"app-plus" === h && (g = uni._globalUniCloudObj ? uni._globalUniCloudObj : uni._globalUniCloudObj = {});var y = ["invoke", "success", "fail", "complete"],_ = m("_globalUniCloudInterceptor");function w(e, t) {_[e] || (_[e] = {}), i(t) && Object.keys(t).forEach(function (n) {y.indexOf(n) > -1 && function (e, t, n) {var s = _[e][t];s || (s = _[e][t] = []), -1 === s.indexOf(n) && "function" == typeof n && s.push(n);}(e, n, t[n]);});}function k(e, t) {_[e] || (_[e] = {}), i(t) ? Object.keys(t).forEach(function (n) {y.indexOf(n) > -1 && function (e, t, n) {var s = _[e][t];if (!s) return;var r = s.indexOf(n);r > -1 && s.splice(r, 1);}(e, n, t[n]);}) : delete _[e];}function S(e, t) {return e && 0 !== e.length ? e.reduce(function (e, n) {return e.then(function () {return n(t);});}, Promise.resolve()) : Promise.resolve();}function v(e, t) {return _[e] && _[e][t] || [];}function T(e, t) {return t ? function (n) {var _this2 = this;var s = "callFunction" === t && "DCloud-clientDB" === (n && n.name);var r;r = this.isReady ? Promise.resolve() : this.initUniCloud, n = n || {};var o = r.then(function () {return s ? Promise.resolve() : S(v(t, "invoke"), n);}).then(function () {return e.call(_this2, n);}).then(function (e) {return s ? Promise.resolve(e) : S(v(t, "success"), e).then(function () {return S(v(t, "complete"), e);}).then(function () {return Promise.resolve(e);});}, function (e) {return s ? Promise.reject(e) : S(v(t, "fail"), e).then(function () {return S(v(t, "complete"), e);}).then(function () {return Promise.reject(e);});});if (!(n.success || n.fail || n.complete)) return o;o.then(function (e) {n.success && n.success(e), n.complete && n.complete(e);}, function (e) {n.fail && n.fail(e), n.complete && n.complete(e);});} : function (t) {if (!((t = t || {}).success || t.fail || t.complete)) return e.call(this, t);e.call(this, t).then(function (e) {t.success && t.success(e), t.complete && t.complete(e);}, function (e) {t.fail && t.fail(e), t.complete && t.complete(e);});};}var A = /*#__PURE__*/function (_Error2) {_inherits(A, _Error2);var _super2 = _createSuper(A);function A(e) {var _this3;_classCallCheck(this, A);_this3 = _super2.call(this, e.message), _this3.errMsg = e.message || "", Object.defineProperties(_assertThisInitialized(_this3), { code: { get: function get() {return e.code;} }, requestId: { get: function get() {return e.requestId;} }, message: { get: function get() {return this.errMsg;}, set: function set(e) {this.errMsg = e;} } });return _this3;}return A;}( /*#__PURE__*/_wrapNativeSuper(Error));var P;function I() {var e = uni.getLocale && uni.getLocale() || "en";if (P) return _objectSpread(_objectSpread({}, P), {}, { LOCALE: e });var _uni$getSystemInfoSyn = uni.getSystemInfoSync(),t = _uni$getSystemInfoSyn.deviceId,n = _uni$getSystemInfoSyn.platform;return P = { PLATFORM: h, OS: n, APPID: p, DEVICEID: t, CLIENT_SDK_VERSION: "1.0.21" }, _objectSpread(_objectSpread({}, P), {}, { LOCALE: e });}var b = { sign: function sign(e, t) {var n = "";return Object.keys(e).sort().forEach(function (t) {e[t] && (n = n + "&" + t + "=" + e[t]);}), n = n.slice(1), r(n, t).toString();}, wrappedRequest: function wrappedRequest(e, t) {return new Promise(function (n, s) {t(Object.assign(e, { complete: function complete(e) {e || (e = {}), u && "h5" === h && e.errMsg && 0 === e.errMsg.indexOf("request:fail") && console.warn("发布H5，需要在uniCloud后台操作，绑定安全域名，否则会因为跨域问题而无法访问。教程参考：https://uniapp.dcloud.io/uniCloud/quickstart?id=useinh5");var t = e.data && e.data.header && e.data.header["x-serverless-request-id"] || e.header && e.header["request-id"];if (!e.statusCode || e.statusCode >= 400) return s(new A({ code: "SYS_ERR", message: e.errMsg || "request:fail", requestId: t }));var r = e.data;if (r.error) return s(new A({ code: r.error.code, message: r.error.message, requestId: t }));r.result = r.data, r.requestId = t, delete r.data, n(r);} }));});} };var E = { request: function request(e) {return uni.request(e);}, uploadFile: function uploadFile(e) {return uni.uploadFile(e);}, setStorageSync: function setStorageSync(e, t) {return uni.setStorageSync(e, t);}, getStorageSync: function getStorageSync(e) {return uni.getStorageSync(e);}, removeStorageSync: function removeStorageSync(e) {return uni.removeStorageSync(e);}, clearStorageSync: function clearStorageSync() {return uni.clearStorageSync();} },O = { "uniCloud.init.paramRequired": "{param} required", "uniCloud.uploadFile.fileError": "filePath should be instance of File" };var _e3 = (0, _uniI18n.initVueI18n)({ "zh-Hans": { "uniCloud.init.paramRequired": "缺少参数：{param}", "uniCloud.uploadFile.fileError": "filePath应为File对象" }, "zh-Hant": { "uniCloud.init.paramRequired": "缺少参数：{param}", "uniCloud.uploadFile.fileError": "filePath应为File对象" }, en: O, fr: { "uniCloud.init.paramRequired": "{param} required", "uniCloud.uploadFile.fileError": "filePath should be instance of File" }, es: { "uniCloud.init.paramRequired": "{param} required", "uniCloud.uploadFile.fileError": "filePath should be instance of File" }, ja: O }, "zh-Hans"),C = _e3.t;var U = /*#__PURE__*/function () {function U(e) {_classCallCheck(this, U);["spaceId", "clientSecret"].forEach(function (t) {if (!Object.prototype.hasOwnProperty.call(e, t)) throw new Error(C("uniCloud.init.paramRequired", { param: t }));}), this.config = Object.assign({}, { endpoint: "https://api.bspapp.com" }, e), this.config.provider = "aliyun", this.config.requestUrl = this.config.endpoint + "/client", this.config.envType = this.config.envType || "public", this.config.accessTokenKey = "access_token_" + this.config.spaceId, this.adapter = E, this._getAccessTokenPromise = null, this._getAccessTokenPromiseStatus = null;}_createClass(U, [{ key: "setAccessToken", value: function setAccessToken(e) {this.accessToken = e;} }, { key: "requestWrapped", value: function requestWrapped(e) {return b.wrappedRequest(e, this.adapter.request);} }, { key: "requestAuth", value: function requestAuth(e) {return this.requestWrapped(e);} }, { key: "request", value: function request(e, t) {var _this4 = this;return Promise.resolve().then(function () {return _this4.hasAccessToken ? t ? _this4.requestWrapped(e) : _this4.requestWrapped(e).catch(function (t) {return new Promise(function (e, n) {!t || "GATEWAY_INVALID_TOKEN" !== t.code && "InvalidParameter.InvalidToken" !== t.code ? n(t) : e();}).then(function () {return _this4.getAccessToken();}).then(function () {var t = _this4.rebuildRequest(e);return _this4.request(t, !0);});}) : _this4.getAccessToken().then(function () {var t = _this4.rebuildRequest(e);return _this4.request(t, !0);});});} }, { key: "rebuildRequest", value: function rebuildRequest(e) {var t = Object.assign({}, e);return t.data.token = this.accessToken, t.header["x-basement-token"] = this.accessToken, t.header["x-serverless-sign"] = b.sign(t.data, this.config.clientSecret), t;} }, { key: "setupRequest", value: function setupRequest(e, t) {var n = Object.assign({}, e, { spaceId: this.config.spaceId, timestamp: Date.now() }),s = { "Content-Type": "application/json" };return "auth" !== t && (n.token = this.accessToken, s["x-basement-token"] = this.accessToken), s["x-serverless-sign"] = b.sign(n, this.config.clientSecret), { url: this.config.requestUrl, method: "POST", data: n, dataType: "json", header: s };} }, { key: "getAccessToken", value: function getAccessToken() {var _this5 = this;if ("pending" === this._getAccessTokenPromiseStatus) return this._getAccessTokenPromise;this._getAccessTokenPromiseStatus = "pending";return this._getAccessTokenPromise = this.requestAuth(this.setupRequest({ method: "serverless.auth.user.anonymousAuthorize", params: "{}" }, "auth")).then(function (e) {return new Promise(function (t, n) {e.result && e.result.accessToken ? (_this5.setAccessToken(e.result.accessToken), _this5._getAccessTokenPromiseStatus = "fulfilled", t(_this5.accessToken)) : (_this5._getAccessTokenPromiseStatus = "rejected", n(new A({ code: "AUTH_FAILED", message: "获取accessToken失败" })));});}, function (e) {return _this5._getAccessTokenPromiseStatus = "rejected", Promise.reject(e);}), this._getAccessTokenPromise;} }, { key: "authorize", value: function authorize() {this.getAccessToken();} }, { key: "callFunction", value: function callFunction(e) {var t = { method: "serverless.function.runtime.invoke", params: JSON.stringify({ functionTarget: e.name, functionArgs: e.data || {} }) };return this.request(this.setupRequest(t));} }, { key: "getOSSUploadOptionsFromPath", value: function getOSSUploadOptionsFromPath(e) {var t = { method: "serverless.file.resource.generateProximalSign", params: JSON.stringify(e) };return this.request(this.setupRequest(t));} }, { key: "uploadFileToOSS", value: function uploadFileToOSS(_ref) {var _this6 = this;var e = _ref.url,t = _ref.formData,n = _ref.name,s = _ref.filePath,r = _ref.fileType,o = _ref.onUploadProgress;return new Promise(function (i, a) {var c = _this6.adapter.uploadFile({ url: e, formData: t, name: n, filePath: s, fileType: r, header: { "X-OSS-server-side-encrpytion": "AES256" }, success: function success(e) {e && e.statusCode < 400 ? i(e) : a(new A({ code: "UPLOAD_FAILED", message: "文件上传失败" }));}, fail: function fail(e) {a(new A({ code: e.code || "UPLOAD_FAILED", message: e.message || e.errMsg || "文件上传失败" }));} });"function" == typeof o && c && "function" == typeof c.onProgressUpdate && c.onProgressUpdate(function (e) {o({ loaded: e.totalBytesSent, total: e.totalBytesExpectedToSend });});});} }, { key: "reportOSSUpload", value: function reportOSSUpload(e) {var t = { method: "serverless.file.resource.report", params: JSON.stringify(e) };return this.request(this.setupRequest(t));} }, { key: "uploadFile", value: function uploadFile(_ref2) {var _this7 = this;var e = _ref2.filePath,t = _ref2.cloudPath,_ref2$fileType = _ref2.fileType,n = _ref2$fileType === void 0 ? "image" : _ref2$fileType,s = _ref2.onUploadProgress,r = _ref2.config;if ("string" !== o(t)) throw new A({ code: "INVALID_PARAM", message: "cloudPath必须为字符串类型" });if (!(t = t.trim())) throw new A({ code: "CLOUDPATH_REQUIRED", message: "cloudPath不可为空" });if (/:\/\//.test(t)) throw new A({ code: "INVALID_PARAM", message: "cloudPath不合法" });var i = r && r.envType || this.config.envType;var a, c;return this.getOSSUploadOptionsFromPath({ env: i, filename: t }).then(function (t) {var r = t.result;a = r.id, c = "https://" + r.cdnDomain + "/" + r.ossPath;var o = { url: "https://" + r.host, formData: { "Cache-Control": "max-age=2592000", "Content-Disposition": "attachment", OSSAccessKeyId: r.accessKeyId, Signature: r.signature, host: r.host, id: a, key: r.ossPath, policy: r.policy, success_action_status: 200 }, fileName: "file", name: "file", filePath: e, fileType: n };return _this7.uploadFileToOSS(Object.assign({}, o, { onUploadProgress: s }));}).then(function () {return _this7.reportOSSUpload({ id: a });}).then(function (t) {return new Promise(function (n, s) {t.success ? n({ success: !0, filePath: e, fileID: c }) : s(new A({ code: "UPLOAD_FAILED", message: "文件上传失败" }));});});} }, { key: "deleteFile", value: function deleteFile(_ref3) {var e = _ref3.fileList;var t = { method: "serverless.file.resource.delete", params: JSON.stringify({ id: e[0] }) };return this.request(this.setupRequest(t));} }, { key: "getTempFileURL", value: function getTempFileURL() {var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},e = _ref4.fileList;return new Promise(function (t, n) {Array.isArray(e) && 0 !== e.length || n(new A({ code: "INVALID_PARAM", message: "fileList的元素必须是非空的字符串" })), t({ fileList: e.map(function (e) {return { fileID: e, tempFileURL: e };}) });});} }, { key: "hasAccessToken", get: function get() {return !!this.accessToken;} }]);return U;}();var x = { init: function init(e) {var t = new U(e),n = { signInAnonymously: function signInAnonymously() {return t.authorize();}, getLoginState: function getLoginState() {return Promise.resolve(!1);} };return t.auth = function () {return n;}, t.customAuth = t.auth, t;} };var D = "undefined" != typeof location && "http:" === location.protocol ? "http:" : "https:";var R;!function (e) {e.local = "local", e.none = "none", e.session = "session";}(R || (R = {}));var q = function q() {};var L = function L() {var e;if (!Promise) {e = function e() {}, e.promise = {};var _t2 = function _t2() {throw new Error('Your Node runtime does support ES6 Promises. Set "global.Promise" to your preferred implementation of promises.');};return Object.defineProperty(e.promise, "then", { get: _t2 }), Object.defineProperty(e.promise, "catch", { get: _t2 }), e;}var t = new Promise(function (t, n) {e = function e(_e4, s) {return _e4 ? n(_e4) : t(s);};});return e.promise = t, e;};function F(e) {return void 0 === e;}function N(e) {return "[object Null]" === Object.prototype.toString.call(e);}var $;function M(e) {var t = (n = e, "[object Array]" === Object.prototype.toString.call(n) ? e : [e]);var n;var _iterator = _createForOfIteratorHelper(t),_step;try {for (_iterator.s(); !(_step = _iterator.n()).done;) {var _e5 = _step.value;var _t3 = _e5.isMatch,_n = _e5.genAdapter,_s = _e5.runtime;if (_t3()) return { adapter: _n(), runtime: _s };}} catch (err) {_iterator.e(err);} finally {_iterator.f();}}!function (e) {e.WEB = "web", e.WX_MP = "wx_mp";}($ || ($ = {}));var j = { adapter: null, runtime: void 0 },B = ["anonymousUuidKey"];var K = /*#__PURE__*/function (_q) {_inherits(K, _q);var _super3 = _createSuper(K);function K() {var _this8;_classCallCheck(this, K);_this8 = _super3.call(this), j.adapter.root.tcbObject || (j.adapter.root.tcbObject = {});return _this8;}_createClass(K, [{ key: "setItem", value: function setItem(e, t) {j.adapter.root.tcbObject[e] = t;} }, { key: "getItem", value: function getItem(e) {return j.adapter.root.tcbObject[e];} }, { key: "removeItem", value: function removeItem(e) {delete j.adapter.root.tcbObject[e];} }, { key: "clear", value: function clear() {delete j.adapter.root.tcbObject;} }]);return K;}(q);function H(e, t) {switch (e) {case "local":return t.localStorage || new K();case "none":return new K();default:return t.sessionStorage || new K();}}var W = /*#__PURE__*/function () {function W(e) {_classCallCheck(this, W);if (!this._storage) {this._persistence = j.adapter.primaryStorage || e.persistence, this._storage = H(this._persistence, j.adapter);var _t4 = "access_token_".concat(e.env),_n2 = "access_token_expire_".concat(e.env),_s2 = "refresh_token_".concat(e.env),_r = "anonymous_uuid_".concat(e.env),_o = "login_type_".concat(e.env),_i = "user_info_".concat(e.env);this.keys = { accessTokenKey: _t4, accessTokenExpireKey: _n2, refreshTokenKey: _s2, anonymousUuidKey: _r, loginTypeKey: _o, userInfoKey: _i };}}_createClass(W, [{ key: "updatePersistence", value: function updatePersistence(e) {if (e === this._persistence) return;var t = "local" === this._persistence;this._persistence = e;var n = H(e, j.adapter);for (var _e6 in this.keys) {var _s3 = this.keys[_e6];if (t && B.includes(_e6)) continue;var _r2 = this._storage.getItem(_s3);F(_r2) || N(_r2) || (n.setItem(_s3, _r2), this._storage.removeItem(_s3));}this._storage = n;} }, { key: "setStore", value: function setStore(e, t, n) {if (!this._storage) return;var s = { version: n || "localCachev1", content: t },r = JSON.stringify(s);try {this._storage.setItem(e, r);} catch (e) {throw e;}} }, { key: "getStore", value: function getStore(e, t) {try {if (!this._storage) return;} catch (e) {return "";}t = t || "localCachev1";var n = this._storage.getItem(e);if (!n) return "";if (n.indexOf(t) >= 0) {return JSON.parse(n).content;}return "";} }, { key: "removeStore", value: function removeStore(e) {this._storage.removeItem(e);} }]);return W;}();var z = {},J = {};function V(e) {return z[e];}var Y = function Y(e, t) {_classCallCheck(this, Y);this.data = t || null, this.name = e;};var X = /*#__PURE__*/function (_Y) {_inherits(X, _Y);var _super4 = _createSuper(X);function X(e, t) {var _this9;_classCallCheck(this, X);_this9 = _super4.call(this, "error", { error: e, data: t }), _this9.error = e;return _this9;}return X;}(Y);var G = new ( /*#__PURE__*/function () {function _class() {_classCallCheck(this, _class);this._listeners = {};}_createClass(_class, [{ key: "on", value: function on(e, t) {return function (e, t, n) {n[e] = n[e] || [], n[e].push(t);}(e, t, this._listeners), this;} }, { key: "off", value: function off(e, t) {return function (e, t, n) {if (n && n[e]) {var _s4 = n[e].indexOf(t);-1 !== _s4 && n[e].splice(_s4, 1);}}(e, t, this._listeners), this;} }, { key: "fire", value: function fire(e, t) {if (e instanceof X) return console.error(e.error), this;var n = "string" == typeof e ? new Y(e, t || {}) : e;var s = n.name;if (this._listens(s)) {n.target = this;var _e7 = this._listeners[s] ? _toConsumableArray(this._listeners[s]) : [];var _iterator2 = _createForOfIteratorHelper(_e7),_step2;try {for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {var _t5 = _step2.value;_t5.call(this, n);}} catch (err) {_iterator2.e(err);} finally {_iterator2.f();}}return this;} }, { key: "_listens", value: function _listens(e) {return this._listeners[e] && this._listeners[e].length > 0;} }]);return _class;}())();function Q(e, t) {G.on(e, t);}function Z(e) {var t = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};G.fire(e, t);}function ee(e, t) {G.off(e, t);}var te = "loginStateChanged",ne = "loginStateExpire",se = "loginTypeChanged",re = "anonymousConverted",oe = "refreshAccessToken";var ie;!function (e) {e.ANONYMOUS = "ANONYMOUS", e.WECHAT = "WECHAT", e.WECHAT_PUBLIC = "WECHAT-PUBLIC", e.WECHAT_OPEN = "WECHAT-OPEN", e.CUSTOM = "CUSTOM", e.EMAIL = "EMAIL", e.USERNAME = "USERNAME", e.NULL = "NULL";}(ie || (ie = {}));var ae = ["auth.getJwt", "auth.logout", "auth.signInWithTicket", "auth.signInAnonymously", "auth.signIn", "auth.fetchAccessTokenWithRefreshToken", "auth.signUpWithEmailAndPassword", "auth.activateEndUserMail", "auth.sendPasswordResetEmail", "auth.resetPasswordWithToken", "auth.isUsernameRegistered"],ce = { "X-SDK-Version": "1.3.5" };function ue(e, t, n) {var s = e[t];e[t] = function (t) {var r = {},o = {};n.forEach(function (n) {var _n$call = n.call(e, t),s = _n$call.data,i = _n$call.headers;Object.assign(r, s), Object.assign(o, i);});var i = t.data;return i && function () {var e;if (e = i, "[object FormData]" !== Object.prototype.toString.call(e)) t.data = _objectSpread(_objectSpread({}, i), r);else for (var _e8 in r) {i.append(_e8, r[_e8]);}}(), t.headers = _objectSpread(_objectSpread({}, t.headers || {}), o), s.call(e, t);};}function he() {var e = Math.random().toString(16).slice(2);return { data: { seqId: e }, headers: _objectSpread(_objectSpread({}, ce), {}, { "x-seqid": e }) };}var le = /*#__PURE__*/function () {function le() {var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};_classCallCheck(this, le);var t;this.config = e, this._reqClass = new j.adapter.reqClass({ timeout: this.config.timeout, timeoutMsg: "\u8BF7\u6C42\u5728".concat(this.config.timeout / 1e3, "s\u5185\u672A\u5B8C\u6210\uFF0C\u5DF2\u4E2D\u65AD"), restrictedMethods: ["post"] }), this._cache = V(this.config.env), this._localCache = (t = this.config.env, J[t]), ue(this._reqClass, "post", [he]), ue(this._reqClass, "upload", [he]), ue(this._reqClass, "download", [he]);}_createClass(le, [{ key: "post", value: function () {var _post = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee(e) {return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:_context.next = 2;return this._reqClass.post(e);case 2:return _context.abrupt("return", _context.sent);case 3:case "end":return _context.stop();}}}, _callee, this);}));function post(_x) {return _post.apply(this, arguments);}return post;}() }, { key: "upload", value: function () {var _upload = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee2(e) {return _regenerator.default.wrap(function _callee2$(_context2) {while (1) {switch (_context2.prev = _context2.next) {case 0:_context2.next = 2;return this._reqClass.upload(e);case 2:return _context2.abrupt("return", _context2.sent);case 3:case "end":return _context2.stop();}}}, _callee2, this);}));function upload(_x2) {return _upload.apply(this, arguments);}return upload;}() }, { key: "download", value: function () {var _download = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee3(e) {return _regenerator.default.wrap(function _callee3$(_context3) {while (1) {switch (_context3.prev = _context3.next) {case 0:_context3.next = 2;return this._reqClass.download(e);case 2:return _context3.abrupt("return", _context3.sent);case 3:case "end":return _context3.stop();}}}, _callee3, this);}));function download(_x3) {return _download.apply(this, arguments);}return download;}() }, { key: "refreshAccessToken", value: function () {var _refreshAccessToken2 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee4() {var e, t;return _regenerator.default.wrap(function _callee4$(_context4) {while (1) {switch (_context4.prev = _context4.next) {case 0:this._refreshAccessTokenPromise || (this._refreshAccessTokenPromise = this._refreshAccessToken());_context4.prev = 1;_context4.next = 4;return this._refreshAccessTokenPromise;case 4:e = _context4.sent;_context4.next = 10;break;case 7:_context4.prev = 7;_context4.t0 = _context4["catch"](1);t = _context4.t0;case 10:if (!(this._refreshAccessTokenPromise = null, this._shouldRefreshAccessTokenHook = null, t)) {_context4.next = 12;break;}throw t;case 12:return _context4.abrupt("return", e);case 13:case "end":return _context4.stop();}}}, _callee4, this, [[1, 7]]);}));function refreshAccessToken() {return _refreshAccessToken2.apply(this, arguments);}return refreshAccessToken;}() }, { key: "_refreshAccessToken", value: function () {var _refreshAccessToken3 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee5() {var _this$_cache$keys, e, t, n, s, r, o, i, a, _e9, _e10, _t6, _s5;return _regenerator.default.wrap(function _callee5$(_context5) {while (1) {switch (_context5.prev = _context5.next) {case 0:_this$_cache$keys = this._cache.keys, e = _this$_cache$keys.accessTokenKey, t = _this$_cache$keys.accessTokenExpireKey, n = _this$_cache$keys.refreshTokenKey, s = _this$_cache$keys.loginTypeKey, r = _this$_cache$keys.anonymousUuidKey;this._cache.removeStore(e), this._cache.removeStore(t);o = this._cache.getStore(n);if (o) {_context5.next = 5;break;}throw new Error("未登录CloudBase");case 5:i = { refresh_token: o };_context5.next = 8;return this.request("auth.fetchAccessTokenWithRefreshToken", i);case 8:a = _context5.sent;if (!a.data.code) {_context5.next = 21;break;}_e9 = a.data.code;if (!("SIGN_PARAM_INVALID" === _e9 || "REFRESH_TOKEN_EXPIRED" === _e9 || "INVALID_REFRESH_TOKEN" === _e9)) {_context5.next = 20;break;}if (!(this._cache.getStore(s) === ie.ANONYMOUS && "INVALID_REFRESH_TOKEN" === _e9)) {_context5.next = 19;break;}_e10 = this._cache.getStore(r);_t6 = this._cache.getStore(n);_context5.next = 17;return this.send("auth.signInAnonymously", { anonymous_uuid: _e10, refresh_token: _t6 });case 17:_s5 = _context5.sent;return _context5.abrupt("return", (this.setRefreshToken(_s5.refresh_token), this._refreshAccessToken()));case 19:Z(ne), this._cache.removeStore(n);case 20:throw new Error("\u5237\u65B0access token\u5931\u8D25\uFF1A".concat(a.data.code));case 21:if (!a.data.access_token) {_context5.next = 23;break;}return _context5.abrupt("return", (Z(oe), this._cache.setStore(e, a.data.access_token), this._cache.setStore(t, a.data.access_token_expire + Date.now()), { accessToken: a.data.access_token, accessTokenExpire: a.data.access_token_expire }));case 23:a.data.refresh_token && (this._cache.removeStore(n), this._cache.setStore(n, a.data.refresh_token), this._refreshAccessToken());case 24:case "end":return _context5.stop();}}}, _callee5, this);}));function _refreshAccessToken() {return _refreshAccessToken3.apply(this, arguments);}return _refreshAccessToken;}() }, { key: "getAccessToken", value: function () {var _getAccessToken = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee6() {var _this$_cache$keys2, e, t, n, s, r, o;return _regenerator.default.wrap(function _callee6$(_context6) {while (1) {switch (_context6.prev = _context6.next) {case 0:_this$_cache$keys2 = this._cache.keys, e = _this$_cache$keys2.accessTokenKey, t = _this$_cache$keys2.accessTokenExpireKey, n = _this$_cache$keys2.refreshTokenKey;if (this._cache.getStore(n)) {_context6.next = 3;break;}throw new Error("refresh token不存在，登录状态异常");case 3:s = this._cache.getStore(e), r = this._cache.getStore(t), o = !0;_context6.t0 = this._shouldRefreshAccessTokenHook;if (!_context6.t0) {_context6.next = 9;break;}_context6.next = 8;return this._shouldRefreshAccessTokenHook(s, r);case 8:_context6.t0 = !_context6.sent;case 9:_context6.t1 = _context6.t0;if (!_context6.t1) {_context6.next = 12;break;}o = !1;case 12:return _context6.abrupt("return", (!s || !r || r < Date.now()) && o ? this.refreshAccessToken() : { accessToken: s, accessTokenExpire: r });case 13:case "end":return _context6.stop();}}}, _callee6, this);}));function getAccessToken() {return _getAccessToken.apply(this, arguments);}return getAccessToken;}() }, { key: "request", value: function () {var _request = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee7(e, t, n) {var s, r, o, _e11, i, _e12, _e13, a, c, u, h, l, d, f, p, g;return _regenerator.default.wrap(function _callee7$(_context7) {while (1) {switch (_context7.prev = _context7.next) {case 0:s = "x-tcb-trace_".concat(this.config.env);r = "application/x-www-form-urlencoded";o = _objectSpread({ action: e, env: this.config.env, dataVersion: "2019-08-16" }, t);if (!(-1 === ae.indexOf(e))) {_context7.next = 10;break;}_e11 = this._cache.keys.refreshTokenKey;_context7.t0 = this._cache.getStore(_e11);if (!_context7.t0) {_context7.next = 10;break;}_context7.next = 9;return this.getAccessToken();case 9:o.access_token = _context7.sent.accessToken;case 10:if ("storage.uploadFile" === e) {i = new FormData();for (_e12 in i) {i.hasOwnProperty(_e12) && void 0 !== i[_e12] && i.append(_e12, o[_e12]);}r = "multipart/form-data";} else {r = "application/json", i = {};for (_e13 in o) {void 0 !== o[_e13] && (i[_e13] = o[_e13]);}}a = { headers: { "content-type": r } };n && n.onUploadProgress && (a.onUploadProgress = n.onUploadProgress);c = this._localCache.getStore(s);c && (a.headers["X-TCB-Trace"] = c);u = t.parse, h = t.inQuery, l = t.search;d = { env: this.config.env };u && (d.parse = !0), h && (d = _objectSpread(_objectSpread({}, h), d));f = function (e, t) {var n = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};var s = /\?/.test(t);var r = "";for (var _e14 in n) {"" === r ? !s && (t += "?") : r += "&", r += "".concat(_e14, "=").concat(encodeURIComponent(n[_e14]));}return /^http(s)?\:\/\//.test(t += r) ? t : "".concat(e).concat(t);}(D, "//tcb-api.tencentcloudapi.com/web", d);l && (f += l);_context7.next = 22;return this.post(_objectSpread({ url: f, data: i }, a));case 22:p = _context7.sent;g = p.header && p.header["x-tcb-trace"];if (!(g && this._localCache.setStore(s, g), 200 !== Number(p.status) && 200 !== Number(p.statusCode) || !p.data)) {_context7.next = 26;break;}throw new Error("network request error");case 26:return _context7.abrupt("return", p);case 27:case "end":return _context7.stop();}}}, _callee7, this);}));function request(_x4, _x5, _x6) {return _request.apply(this, arguments);}return request;}() }, { key: "send", value: function () {var _send = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee8(e) {var t,n,_n3,_args8 = arguments;return _regenerator.default.wrap(function _callee8$(_context8) {while (1) {switch (_context8.prev = _context8.next) {case 0:t = _args8.length > 1 && _args8[1] !== undefined ? _args8[1] : {};_context8.next = 3;return this.request(e, t, { onUploadProgress: t.onUploadProgress });case 3:n = _context8.sent;if (!("ACCESS_TOKEN_EXPIRED" === n.data.code && -1 === ae.indexOf(e))) {_context8.next = 13;break;}_context8.next = 7;return this.refreshAccessToken();case 7:_context8.next = 9;return this.request(e, t, { onUploadProgress: t.onUploadProgress });case 9:_n3 = _context8.sent;if (!_n3.data.code) {_context8.next = 12;break;}throw new Error("[".concat(_n3.data.code, "] ").concat(_n3.data.message));case 12:return _context8.abrupt("return", _n3.data);case 13:if (!n.data.code) {_context8.next = 15;break;}throw new Error("[".concat(n.data.code, "] ").concat(n.data.message));case 15:return _context8.abrupt("return", n.data);case 16:case "end":return _context8.stop();}}}, _callee8, this);}));function send(_x7) {return _send.apply(this, arguments);}return send;}() }, { key: "setRefreshToken", value: function setRefreshToken(e) {var _this$_cache$keys3 = this._cache.keys,t = _this$_cache$keys3.accessTokenKey,n = _this$_cache$keys3.accessTokenExpireKey,s = _this$_cache$keys3.refreshTokenKey;this._cache.removeStore(t), this._cache.removeStore(n), this._cache.setStore(s, e);} }]);return le;}();var de = {};function fe(e) {return de[e];}var pe = /*#__PURE__*/function () {function pe(e) {_classCallCheck(this, pe);this.config = e, this._cache = V(e.env), this._request = fe(e.env);}_createClass(pe, [{ key: "setRefreshToken", value: function setRefreshToken(e) {var _this$_cache$keys4 = this._cache.keys,t = _this$_cache$keys4.accessTokenKey,n = _this$_cache$keys4.accessTokenExpireKey,s = _this$_cache$keys4.refreshTokenKey;this._cache.removeStore(t), this._cache.removeStore(n), this._cache.setStore(s, e);} }, { key: "setAccessToken", value: function setAccessToken(e, t) {var _this$_cache$keys5 = this._cache.keys,n = _this$_cache$keys5.accessTokenKey,s = _this$_cache$keys5.accessTokenExpireKey;this._cache.setStore(n, e), this._cache.setStore(s, t);} }, { key: "refreshUserInfo", value: function () {var _refreshUserInfo = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee9() {var _yield$this$_request$, e;return _regenerator.default.wrap(function _callee9$(_context9) {while (1) {switch (_context9.prev = _context9.next) {case 0:_context9.next = 2;return this._request.send("auth.getUserInfo", {});case 2:_yield$this$_request$ = _context9.sent;e = _yield$this$_request$.data;return _context9.abrupt("return", (this.setLocalUserInfo(e), e));case 5:case "end":return _context9.stop();}}}, _callee9, this);}));function refreshUserInfo() {return _refreshUserInfo.apply(this, arguments);}return refreshUserInfo;}() }, { key: "setLocalUserInfo", value: function setLocalUserInfo(e) {var t = this._cache.keys.userInfoKey;this._cache.setStore(t, e);} }]);return pe;}();var ge = /*#__PURE__*/function () {function ge(e) {_classCallCheck(this, ge);if (!e) throw new Error("envId is not defined");this._envId = e, this._cache = V(this._envId), this._request = fe(this._envId), this.setUserInfo();}_createClass(ge, [{ key: "linkWithTicket", value: function linkWithTicket(e) {if ("string" != typeof e) throw new Error("ticket must be string");return this._request.send("auth.linkWithTicket", { ticket: e });} }, { key: "linkWithRedirect", value: function linkWithRedirect(e) {e.signInWithRedirect();} }, { key: "updatePassword", value: function updatePassword(e, t) {return this._request.send("auth.updatePassword", { oldPassword: t, newPassword: e });} }, { key: "updateEmail", value: function updateEmail(e) {return this._request.send("auth.updateEmail", { newEmail: e });} }, { key: "updateUsername", value: function updateUsername(e) {if ("string" != typeof e) throw new Error("username must be a string");return this._request.send("auth.updateUsername", { username: e });} }, { key: "getLinkedUidList", value: function () {var _getLinkedUidList = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee10() {var _yield$this$_request$2, e, t, n;return _regenerator.default.wrap(function _callee10$(_context10) {while (1) {switch (_context10.prev = _context10.next) {case 0:_context10.next = 2;return this._request.send("auth.getLinkedUidList", {});case 2:_yield$this$_request$2 = _context10.sent;e = _yield$this$_request$2.data;t = !1;n = e.users;return _context10.abrupt("return", (n.forEach(function (e) {e.wxOpenId && e.wxPublicId && (t = !0);}), { users: n, hasPrimaryUid: t }));case 7:case "end":return _context10.stop();}}}, _callee10, this);}));function getLinkedUidList() {return _getLinkedUidList.apply(this, arguments);}return getLinkedUidList;}() }, { key: "setPrimaryUid", value: function setPrimaryUid(e) {return this._request.send("auth.setPrimaryUid", { uid: e });} }, { key: "unlink", value: function unlink(e) {return this._request.send("auth.unlink", { platform: e });} }, { key: "update", value: function () {var _update = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee11(e) {var t, n, s, r, o, i, _yield$this$_request$3, a;return _regenerator.default.wrap(function _callee11$(_context11) {while (1) {switch (_context11.prev = _context11.next) {case 0:t = e.nickName;n = e.gender;s = e.avatarUrl;r = e.province;o = e.country;i = e.city;_context11.next = 8;return this._request.send("auth.updateUserInfo", { nickName: t, gender: n, avatarUrl: s, province: r, country: o, city: i });case 8:_yield$this$_request$3 = _context11.sent;a = _yield$this$_request$3.data;this.setLocalUserInfo(a);case 11:case "end":return _context11.stop();}}}, _callee11, this);}));function update(_x8) {return _update.apply(this, arguments);}return update;}() }, { key: "refresh", value: function () {var _refresh = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee12() {var _yield$this$_request$4, e;return _regenerator.default.wrap(function _callee12$(_context12) {while (1) {switch (_context12.prev = _context12.next) {case 0:_context12.next = 2;return this._request.send("auth.getUserInfo", {});case 2:_yield$this$_request$4 = _context12.sent;e = _yield$this$_request$4.data;return _context12.abrupt("return", (this.setLocalUserInfo(e), e));case 5:case "end":return _context12.stop();}}}, _callee12, this);}));function refresh() {return _refresh.apply(this, arguments);}return refresh;}() }, { key: "setUserInfo", value: function setUserInfo() {var _this10 = this;var e = this._cache.keys.userInfoKey,t = this._cache.getStore(e);["uid", "loginType", "openid", "wxOpenId", "wxPublicId", "unionId", "qqMiniOpenId", "email", "hasPassword", "customUserId", "nickName", "gender", "avatarUrl"].forEach(function (e) {_this10[e] = t[e];}), this.location = { country: t.country, province: t.province, city: t.city };} }, { key: "setLocalUserInfo", value: function setLocalUserInfo(e) {var t = this._cache.keys.userInfoKey;this._cache.setStore(t, e), this.setUserInfo();} }]);return ge;}();var me = /*#__PURE__*/function () {function me(e) {_classCallCheck(this, me);if (!e) throw new Error("envId is not defined");this._cache = V(e);var _this$_cache$keys6 = this._cache.keys,t = _this$_cache$keys6.refreshTokenKey,n = _this$_cache$keys6.accessTokenKey,s = _this$_cache$keys6.accessTokenExpireKey,r = this._cache.getStore(t),o = this._cache.getStore(n),i = this._cache.getStore(s);this.credential = { refreshToken: r, accessToken: o, accessTokenExpire: i }, this.user = new ge(e);}_createClass(me, [{ key: "isAnonymousAuth", get: function get() {return this.loginType === ie.ANONYMOUS;} }, { key: "isCustomAuth", get: function get() {return this.loginType === ie.CUSTOM;} }, { key: "isWeixinAuth", get: function get() {return this.loginType === ie.WECHAT || this.loginType === ie.WECHAT_OPEN || this.loginType === ie.WECHAT_PUBLIC;} }, { key: "loginType", get: function get() {return this._cache.getStore(this._cache.keys.loginTypeKey);} }]);return me;}();var ye = /*#__PURE__*/function (_pe) {_inherits(ye, _pe);var _super5 = _createSuper(ye);function ye() {_classCallCheck(this, ye);return _super5.apply(this, arguments);}_createClass(ye, [{ key: "signIn", value: function () {var _signIn = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee13() {var _this$_cache$keys7, e, t, n, s, r, _e15;return _regenerator.default.wrap(function _callee13$(_context13) {while (1) {switch (_context13.prev = _context13.next) {case 0:this._cache.updatePersistence("local");_this$_cache$keys7 = this._cache.keys;e = _this$_cache$keys7.anonymousUuidKey;t = _this$_cache$keys7.refreshTokenKey;n = this._cache.getStore(e) || void 0;s = this._cache.getStore(t) || void 0;_context13.next = 8;return this._request.send("auth.signInAnonymously", { anonymous_uuid: n, refresh_token: s });case 8:r = _context13.sent;if (!(r.uuid && r.refresh_token)) {_context13.next = 20;break;}this._setAnonymousUUID(r.uuid);this.setRefreshToken(r.refresh_token);_context13.next = 14;return this._request.refreshAccessToken();case 14:Z(te);Z(se, { env: this.config.env, loginType: ie.ANONYMOUS, persistence: "local" });_e15 = new me(this.config.env);_context13.next = 19;return _e15.user.refresh();case 19:return _context13.abrupt("return", _e15);case 20:throw new Error("匿名登录失败");case 21:case "end":return _context13.stop();}}}, _callee13, this);}));function signIn() {return _signIn.apply(this, arguments);}return signIn;}() }, { key: "linkAndRetrieveDataWithTicket", value: function () {var _linkAndRetrieveDataWithTicket = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee14(e) {var _this$_cache$keys8, t, n, s, r, o;return _regenerator.default.wrap(function _callee14$(_context14) {while (1) {switch (_context14.prev = _context14.next) {case 0:_this$_cache$keys8 = this._cache.keys;t = _this$_cache$keys8.anonymousUuidKey;n = _this$_cache$keys8.refreshTokenKey;s = this._cache.getStore(t);r = this._cache.getStore(n);_context14.next = 7;return this._request.send("auth.linkAndRetrieveDataWithTicket", { anonymous_uuid: s, refresh_token: r, ticket: e });case 7:o = _context14.sent;if (!o.refresh_token) {_context14.next = 16;break;}this._clearAnonymousUUID();this.setRefreshToken(o.refresh_token);_context14.next = 13;return this._request.refreshAccessToken();case 13:Z(re, { env: this.config.env });Z(se, { loginType: ie.CUSTOM, persistence: "local" });return _context14.abrupt("return", { credential: { refreshToken: o.refresh_token } });case 16:throw new Error("匿名转化失败");case 17:case "end":return _context14.stop();}}}, _callee14, this);}));function linkAndRetrieveDataWithTicket(_x9) {return _linkAndRetrieveDataWithTicket.apply(this, arguments);}return linkAndRetrieveDataWithTicket;}() }, { key: "_setAnonymousUUID", value: function _setAnonymousUUID(e) {var _this$_cache$keys9 = this._cache.keys,t = _this$_cache$keys9.anonymousUuidKey,n = _this$_cache$keys9.loginTypeKey;this._cache.removeStore(t), this._cache.setStore(t, e), this._cache.setStore(n, ie.ANONYMOUS);} }, { key: "_clearAnonymousUUID", value: function _clearAnonymousUUID() {this._cache.removeStore(this._cache.keys.anonymousUuidKey);} }]);return ye;}(pe);var _e = /*#__PURE__*/function (_pe2) {_inherits(_e, _pe2);var _super6 = _createSuper(_e);function _e() {_classCallCheck(this, _e);return _super6.apply(this, arguments);}_createClass(_e, [{ key: "signIn", value: function () {var _signIn2 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee15(e) {var t, n;return _regenerator.default.wrap(function _callee15$(_context15) {while (1) {switch (_context15.prev = _context15.next) {case 0:if (!("string" != typeof e)) {_context15.next = 2;break;}throw new Error("ticket must be a string");case 2:t = this._cache.keys.refreshTokenKey;_context15.next = 5;return this._request.send("auth.signInWithTicket", { ticket: e, refresh_token: this._cache.getStore(t) || "" });case 5:n = _context15.sent;if (!n.refresh_token) {_context15.next = 15;break;}this.setRefreshToken(n.refresh_token);_context15.next = 10;return this._request.refreshAccessToken();case 10:Z(te);Z(se, { env: this.config.env, loginType: ie.CUSTOM, persistence: this.config.persistence });_context15.next = 14;return this.refreshUserInfo();case 14:return _context15.abrupt("return", new me(this.config.env));case 15:throw new Error("自定义登录失败");case 16:case "end":return _context15.stop();}}}, _callee15, this);}));function signIn(_x10) {return _signIn2.apply(this, arguments);}return signIn;}() }]);return _e;}(pe);var we = /*#__PURE__*/function (_pe3) {_inherits(we, _pe3);var _super7 = _createSuper(we);function we() {_classCallCheck(this, we);return _super7.apply(this, arguments);}_createClass(we, [{ key: "signIn", value: function () {var _signIn3 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee16(e, t) {var n, s, r, o, i;return _regenerator.default.wrap(function _callee16$(_context16) {while (1) {switch (_context16.prev = _context16.next) {case 0:if (!("string" != typeof e)) {_context16.next = 2;break;}throw new Error("email must be a string");case 2:n = this._cache.keys.refreshTokenKey;_context16.next = 5;return this._request.send("auth.signIn", { loginType: "EMAIL", email: e, password: t, refresh_token: this._cache.getStore(n) || "" });case 5:s = _context16.sent;r = s.refresh_token;o = s.access_token;i = s.access_token_expire;if (!r) {_context16.next = 22;break;}this.setRefreshToken(r);if (!(o && i)) {_context16.next = 15;break;}this.setAccessToken(o, i);_context16.next = 17;break;case 15:_context16.next = 17;return this._request.refreshAccessToken();case 17:_context16.next = 19;return this.refreshUserInfo();case 19:Z(te);Z(se, { env: this.config.env, loginType: ie.EMAIL, persistence: this.config.persistence });return _context16.abrupt("return", new me(this.config.env));case 22:throw s.code ? new Error("\u90AE\u7BB1\u767B\u5F55\u5931\u8D25: [".concat(s.code, "] ").concat(s.message)) : new Error("邮箱登录失败");case 23:case "end":return _context16.stop();}}}, _callee16, this);}));function signIn(_x11, _x12) {return _signIn3.apply(this, arguments);}return signIn;}() }, { key: "activate", value: function () {var _activate = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee17(e) {return _regenerator.default.wrap(function _callee17$(_context17) {while (1) {switch (_context17.prev = _context17.next) {case 0:return _context17.abrupt("return", this._request.send("auth.activateEndUserMail", { token: e }));case 1:case "end":return _context17.stop();}}}, _callee17, this);}));function activate(_x13) {return _activate.apply(this, arguments);}return activate;}() }, { key: "resetPasswordWithToken", value: function () {var _resetPasswordWithToken = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee18(e, t) {return _regenerator.default.wrap(function _callee18$(_context18) {while (1) {switch (_context18.prev = _context18.next) {case 0:return _context18.abrupt("return", this._request.send("auth.resetPasswordWithToken", { token: e, newPassword: t }));case 1:case "end":return _context18.stop();}}}, _callee18, this);}));function resetPasswordWithToken(_x14, _x15) {return _resetPasswordWithToken.apply(this, arguments);}return resetPasswordWithToken;}() }]);return we;}(pe);var ke = /*#__PURE__*/function (_pe4) {_inherits(ke, _pe4);var _super8 = _createSuper(ke);function ke() {_classCallCheck(this, ke);return _super8.apply(this, arguments);}_createClass(ke, [{ key: "signIn", value: function () {var _signIn4 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee19(e, t) {var n, s, r, o, i;return _regenerator.default.wrap(function _callee19$(_context19) {while (1) {switch (_context19.prev = _context19.next) {case 0:if (!("string" != typeof e)) {_context19.next = 2;break;}throw new Error("username must be a string");case 2:"string" != typeof t && (t = "", console.warn("password is empty"));n = this._cache.keys.refreshTokenKey;_context19.next = 6;return this._request.send("auth.signIn", { loginType: ie.USERNAME, username: e, password: t, refresh_token: this._cache.getStore(n) || "" });case 6:s = _context19.sent;r = s.refresh_token;o = s.access_token_expire;i = s.access_token;if (!r) {_context19.next = 23;break;}this.setRefreshToken(r);if (!(i && o)) {_context19.next = 16;break;}this.setAccessToken(i, o);_context19.next = 18;break;case 16:_context19.next = 18;return this._request.refreshAccessToken();case 18:_context19.next = 20;return this.refreshUserInfo();case 20:Z(te);Z(se, { env: this.config.env, loginType: ie.USERNAME, persistence: this.config.persistence });return _context19.abrupt("return", new me(this.config.env));case 23:throw s.code ? new Error("\u7528\u6237\u540D\u5BC6\u7801\u767B\u5F55\u5931\u8D25: [".concat(s.code, "] ").concat(s.message)) : new Error("用户名密码登录失败");case 24:case "end":return _context19.stop();}}}, _callee19, this);}));function signIn(_x16, _x17) {return _signIn4.apply(this, arguments);}return signIn;}() }]);return ke;}(pe);var Se = /*#__PURE__*/function () {function Se(e) {_classCallCheck(this, Se);this.config = e, this._cache = V(e.env), this._request = fe(e.env), this._onAnonymousConverted = this._onAnonymousConverted.bind(this), this._onLoginTypeChanged = this._onLoginTypeChanged.bind(this), Q(se, this._onLoginTypeChanged);}_createClass(Se, [{ key: "anonymousAuthProvider", value: function anonymousAuthProvider() {return new ye(this.config);} }, { key: "customAuthProvider", value: function customAuthProvider() {return new _e(this.config);} }, { key: "emailAuthProvider", value: function emailAuthProvider() {return new we(this.config);} }, { key: "usernameAuthProvider", value: function usernameAuthProvider() {return new ke(this.config);} }, { key: "signInAnonymously", value: function () {var _signInAnonymously = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee20() {return _regenerator.default.wrap(function _callee20$(_context20) {while (1) {switch (_context20.prev = _context20.next) {case 0:return _context20.abrupt("return", new ye(this.config).signIn());case 1:case "end":return _context20.stop();}}}, _callee20, this);}));function signInAnonymously() {return _signInAnonymously.apply(this, arguments);}return signInAnonymously;}() }, { key: "signInWithEmailAndPassword", value: function () {var _signInWithEmailAndPassword = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee21(e, t) {return _regenerator.default.wrap(function _callee21$(_context21) {while (1) {switch (_context21.prev = _context21.next) {case 0:return _context21.abrupt("return", new we(this.config).signIn(e, t));case 1:case "end":return _context21.stop();}}}, _callee21, this);}));function signInWithEmailAndPassword(_x18, _x19) {return _signInWithEmailAndPassword.apply(this, arguments);}return signInWithEmailAndPassword;}() }, { key: "signInWithUsernameAndPassword", value: function signInWithUsernameAndPassword(e, t) {return new ke(this.config).signIn(e, t);} }, { key: "linkAndRetrieveDataWithTicket", value: function () {var _linkAndRetrieveDataWithTicket2 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee22(e) {return _regenerator.default.wrap(function _callee22$(_context22) {while (1) {switch (_context22.prev = _context22.next) {case 0:this._anonymousAuthProvider || (this._anonymousAuthProvider = new ye(this.config)), Q(re, this._onAnonymousConverted);_context22.next = 3;return this._anonymousAuthProvider.linkAndRetrieveDataWithTicket(e);case 3:return _context22.abrupt("return", _context22.sent);case 4:case "end":return _context22.stop();}}}, _callee22, this);}));function linkAndRetrieveDataWithTicket(_x20) {return _linkAndRetrieveDataWithTicket2.apply(this, arguments);}return linkAndRetrieveDataWithTicket;}() }, { key: "signOut", value: function () {var _signOut = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee23() {var _this$_cache$keys10, e, t, n, s, r;return _regenerator.default.wrap(function _callee23$(_context23) {while (1) {switch (_context23.prev = _context23.next) {case 0:if (!(this.loginType === ie.ANONYMOUS)) {_context23.next = 2;break;}throw new Error("匿名用户不支持登出操作");case 2:_this$_cache$keys10 = this._cache.keys, e = _this$_cache$keys10.refreshTokenKey, t = _this$_cache$keys10.accessTokenKey, n = _this$_cache$keys10.accessTokenExpireKey, s = this._cache.getStore(e);if (s) {_context23.next = 5;break;}return _context23.abrupt("return");case 5:_context23.next = 7;return this._request.send("auth.logout", { refresh_token: s });case 7:r = _context23.sent;return _context23.abrupt("return", (this._cache.removeStore(e), this._cache.removeStore(t), this._cache.removeStore(n), Z(te), Z(se, { env: this.config.env, loginType: ie.NULL, persistence: this.config.persistence }), r));case 9:case "end":return _context23.stop();}}}, _callee23, this);}));function signOut() {return _signOut.apply(this, arguments);}return signOut;}() }, { key: "signUpWithEmailAndPassword", value: function () {var _signUpWithEmailAndPassword = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee24(e, t) {return _regenerator.default.wrap(function _callee24$(_context24) {while (1) {switch (_context24.prev = _context24.next) {case 0:return _context24.abrupt("return", this._request.send("auth.signUpWithEmailAndPassword", { email: e, password: t }));case 1:case "end":return _context24.stop();}}}, _callee24, this);}));function signUpWithEmailAndPassword(_x21, _x22) {return _signUpWithEmailAndPassword.apply(this, arguments);}return signUpWithEmailAndPassword;}() }, { key: "sendPasswordResetEmail", value: function () {var _sendPasswordResetEmail = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee25(e) {return _regenerator.default.wrap(function _callee25$(_context25) {while (1) {switch (_context25.prev = _context25.next) {case 0:return _context25.abrupt("return", this._request.send("auth.sendPasswordResetEmail", { email: e }));case 1:case "end":return _context25.stop();}}}, _callee25, this);}));function sendPasswordResetEmail(_x23) {return _sendPasswordResetEmail.apply(this, arguments);}return sendPasswordResetEmail;}() }, { key: "onLoginStateChanged", value: function onLoginStateChanged(e) {var _this11 = this;Q(te, function () {var t = _this11.hasLoginState();e.call(_this11, t);});var t = this.hasLoginState();e.call(this, t);} }, { key: "onLoginStateExpired", value: function onLoginStateExpired(e) {Q(ne, e.bind(this));} }, { key: "onAccessTokenRefreshed", value: function onAccessTokenRefreshed(e) {Q(oe, e.bind(this));} }, { key: "onAnonymousConverted", value: function onAnonymousConverted(e) {Q(re, e.bind(this));} }, { key: "onLoginTypeChanged", value: function onLoginTypeChanged(e) {var _this12 = this;Q(se, function () {var t = _this12.hasLoginState();e.call(_this12, t);});} }, { key: "getAccessToken", value: function () {var _getAccessToken2 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee26() {return _regenerator.default.wrap(function _callee26$(_context26) {while (1) {switch (_context26.prev = _context26.next) {case 0:_context26.next = 2;return this._request.getAccessToken();case 2:_context26.t0 = _context26.sent.accessToken;_context26.t1 = this.config.env;return _context26.abrupt("return", { accessToken: _context26.t0, env: _context26.t1 });case 5:case "end":return _context26.stop();}}}, _callee26, this);}));function getAccessToken() {return _getAccessToken2.apply(this, arguments);}return getAccessToken;}() }, { key: "hasLoginState", value: function hasLoginState() {var e = this._cache.keys.refreshTokenKey;return this._cache.getStore(e) ? new me(this.config.env) : null;} }, { key: "isUsernameRegistered", value: function () {var _isUsernameRegistered = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee27(e) {var _yield$this$_request$5, t;return _regenerator.default.wrap(function _callee27$(_context27) {while (1) {switch (_context27.prev = _context27.next) {case 0:if (!("string" != typeof e)) {_context27.next = 2;break;}throw new Error("username must be a string");case 2:_context27.next = 4;return this._request.send("auth.isUsernameRegistered", { username: e });case 4:_yield$this$_request$5 = _context27.sent;t = _yield$this$_request$5.data;return _context27.abrupt("return", t && t.isRegistered);case 7:case "end":return _context27.stop();}}}, _callee27, this);}));function isUsernameRegistered(_x24) {return _isUsernameRegistered.apply(this, arguments);}return isUsernameRegistered;}() }, { key: "getLoginState", value: function getLoginState() {return Promise.resolve(this.hasLoginState());} }, { key: "signInWithTicket", value: function () {var _signInWithTicket = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee28(e) {return _regenerator.default.wrap(function _callee28$(_context28) {while (1) {switch (_context28.prev = _context28.next) {case 0:return _context28.abrupt("return", new _e(this.config).signIn(e));case 1:case "end":return _context28.stop();}}}, _callee28, this);}));function signInWithTicket(_x25) {return _signInWithTicket.apply(this, arguments);}return signInWithTicket;}() }, { key: "shouldRefreshAccessToken", value: function shouldRefreshAccessToken(e) {this._request._shouldRefreshAccessTokenHook = e.bind(this);} }, { key: "getUserInfo", value: function getUserInfo() {return this._request.send("auth.getUserInfo", {}).then(function (e) {return e.code ? e : _objectSpread(_objectSpread({}, e.data), {}, { requestId: e.seqId });});} }, { key: "getAuthHeader", value: function getAuthHeader() {var _this$_cache$keys11 = this._cache.keys,e = _this$_cache$keys11.refreshTokenKey,t = _this$_cache$keys11.accessTokenKey,n = this._cache.getStore(e);return { "x-cloudbase-credentials": this._cache.getStore(t) + "/@@/" + n };} }, { key: "_onAnonymousConverted", value: function _onAnonymousConverted(e) {var t = e.data.env;t === this.config.env && this._cache.updatePersistence(this.config.persistence);} }, { key: "_onLoginTypeChanged", value: function _onLoginTypeChanged(e) {var _e$data = e.data,t = _e$data.loginType,n = _e$data.persistence,s = _e$data.env;s === this.config.env && (this._cache.updatePersistence(n), this._cache.setStore(this._cache.keys.loginTypeKey, t));} }, { key: "currentUser", get: function get() {var e = this.hasLoginState();return e && e.user || null;} }, { key: "loginType", get: function get() {return this._cache.getStore(this._cache.keys.loginTypeKey);} }]);return Se;}();var ve = function ve(e, t) {t = t || L();var n = fe(this.config.env),s = e.cloudPath,r = e.filePath,o = e.onUploadProgress,_e$fileType = e.fileType,i = _e$fileType === void 0 ? "image" : _e$fileType;return n.send("storage.getUploadMetadata", { path: s }).then(function (e) {var _e$data2 = e.data,a = _e$data2.url,c = _e$data2.authorization,u = _e$data2.token,h = _e$data2.fileId,l = _e$data2.cosFileId,d = e.requestId,f = { key: s, signature: c, "x-cos-meta-fileid": l, success_action_status: "201", "x-cos-security-token": u };n.upload({ url: a, data: f, file: r, name: s, fileType: i, onUploadProgress: o }).then(function (e) {201 === e.statusCode ? t(null, { fileID: h, requestId: d }) : t(new Error("STORAGE_REQUEST_FAIL: ".concat(e.data)));}).catch(function (e) {t(e);});}).catch(function (e) {t(e);}), t.promise;},Te = function Te(e, t) {t = t || L();var n = fe(this.config.env),s = e.cloudPath;return n.send("storage.getUploadMetadata", { path: s }).then(function (e) {t(null, e);}).catch(function (e) {t(e);}), t.promise;},Ae = function Ae(_ref5, t) {var e = _ref5.fileList;if (t = t || L(), !e || !Array.isArray(e)) return { code: "INVALID_PARAM", message: "fileList必须是非空的数组" };var _iterator3 = _createForOfIteratorHelper(e),_step3;try {for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {var _t7 = _step3.value;if (!_t7 || "string" != typeof _t7) return { code: "INVALID_PARAM", message: "fileList的元素必须是非空的字符串" };}} catch (err) {_iterator3.e(err);} finally {_iterator3.f();}var n = { fileid_list: e };return fe(this.config.env).send("storage.batchDeleteFile", n).then(function (e) {e.code ? t(null, e) : t(null, { fileList: e.data.delete_list, requestId: e.requestId });}).catch(function (e) {t(e);}), t.promise;},Pe = function Pe(_ref6, t) {var e = _ref6.fileList;t = t || L(), e && Array.isArray(e) || t(null, { code: "INVALID_PARAM", message: "fileList必须是非空的数组" });var n = [];var _iterator4 = _createForOfIteratorHelper(e),_step4;try {for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {var _s6 = _step4.value;"object" == typeof _s6 ? (_s6.hasOwnProperty("fileID") && _s6.hasOwnProperty("maxAge") || t(null, { code: "INVALID_PARAM", message: "fileList的元素必须是包含fileID和maxAge的对象" }), n.push({ fileid: _s6.fileID, max_age: _s6.maxAge })) : "string" == typeof _s6 ? n.push({ fileid: _s6 }) : t(null, { code: "INVALID_PARAM", message: "fileList的元素必须是字符串" });}} catch (err) {_iterator4.e(err);} finally {_iterator4.f();}var s = { file_list: n };return fe(this.config.env).send("storage.batchGetDownloadUrl", s).then(function (e) {e.code ? t(null, e) : t(null, { fileList: e.data.download_list, requestId: e.requestId });}).catch(function (e) {t(e);}), t.promise;},Ie = /*#__PURE__*/function () {var _ref8 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee29(_ref7, t) {var e, n, s, r;return _regenerator.default.wrap(function _callee29$(_context29) {while (1) {switch (_context29.prev = _context29.next) {case 0:e = _ref7.fileID;_context29.next = 3;return Pe.call(this, { fileList: [{ fileID: e, maxAge: 600 }] });case 3:n = _context29.sent.fileList[0];if (!("SUCCESS" !== n.code)) {_context29.next = 6;break;}return _context29.abrupt("return", t ? t(n) : new Promise(function (e) {e(n);}));case 6:s = fe(this.config.env);r = n.download_url;if (!(r = encodeURI(r), !t)) {_context29.next = 10;break;}return _context29.abrupt("return", s.download({ url: r }));case 10:_context29.t0 = t;_context29.next = 13;return s.download({ url: r });case 13:_context29.t1 = _context29.sent;(0, _context29.t0)(_context29.t1);case 15:case "end":return _context29.stop();}}}, _callee29, this);}));return function Ie(_x26, _x27) {return _ref8.apply(this, arguments);};}(),be = function be(_ref9, o) {var e = _ref9.name,t = _ref9.data,n = _ref9.query,s = _ref9.parse,r = _ref9.search;var i = o || L();var a;try {a = t ? JSON.stringify(t) : "";} catch (e) {return Promise.reject(e);}if (!e) return Promise.reject(new Error("函数名不能为空"));var c = { inQuery: n, parse: s, search: r, function_name: e, request_data: a };return fe(this.config.env).send("functions.invokeFunction", c).then(function (e) {if (e.code) i(null, e);else {var _t8 = e.data.response_data;if (s) i(null, { result: _t8, requestId: e.requestId });else try {_t8 = JSON.parse(e.data.response_data), i(null, { result: _t8, requestId: e.requestId });} catch (e) {i(new Error("response data must be json"));}}return i.promise;}).catch(function (e) {i(e);}), i.promise;},Ee = { timeout: 15e3, persistence: "session" },Oe = {};var Ce = /*#__PURE__*/function () {function Ce(e) {_classCallCheck(this, Ce);this.config = e || this.config, this.authObj = void 0;}_createClass(Ce, [{ key: "init", value: function init(e) {switch (j.adapter || (this.requestClient = new j.adapter.reqClass({ timeout: e.timeout || 5e3, timeoutMsg: "\u8BF7\u6C42\u5728".concat((e.timeout || 5e3) / 1e3, "s\u5185\u672A\u5B8C\u6210\uFF0C\u5DF2\u4E2D\u65AD") })), this.config = _objectSpread(_objectSpread({}, Ee), e), !0) {case this.config.timeout > 6e5:console.warn("timeout大于可配置上限[10分钟]，已重置为上限数值"), this.config.timeout = 6e5;break;case this.config.timeout < 100:console.warn("timeout小于可配置下限[100ms]，已重置为下限数值"), this.config.timeout = 100;}return new Ce(this.config);} }, { key: "auth", value: function auth() {var _ref10 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},e = _ref10.persistence;if (this.authObj) return this.authObj;var t = e || j.adapter.primaryStorage || Ee.persistence;var n;return t !== this.config.persistence && (this.config.persistence = t), function (e) {var t = e.env;z[t] = new W(e), J[t] = new W(_objectSpread(_objectSpread({}, e), {}, { persistence: "local" }));}(this.config), n = this.config, de[n.env] = new le(n), this.authObj = new Se(this.config), this.authObj;} }, { key: "on", value: function on(e, t) {return Q.apply(this, [e, t]);} }, { key: "off", value: function off(e, t) {return ee.apply(this, [e, t]);} }, { key: "callFunction", value: function callFunction(e, t) {return be.apply(this, [e, t]);} }, { key: "deleteFile", value: function deleteFile(e, t) {return Ae.apply(this, [e, t]);} }, { key: "getTempFileURL", value: function getTempFileURL(e, t) {return Pe.apply(this, [e, t]);} }, { key: "downloadFile", value: function downloadFile(e, t) {return Ie.apply(this, [e, t]);} }, { key: "uploadFile", value: function uploadFile(e, t) {return ve.apply(this, [e, t]);} }, { key: "getUploadMetadata", value: function getUploadMetadata(e, t) {return Te.apply(this, [e, t]);} }, { key: "registerExtension", value: function registerExtension(e) {Oe[e.name] = e;} }, { key: "invokeExtension", value: function () {var _invokeExtension = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee30(e, t) {var n;return _regenerator.default.wrap(function _callee30$(_context30) {while (1) {switch (_context30.prev = _context30.next) {case 0:n = Oe[e];if (n) {_context30.next = 3;break;}throw Error("\u6269\u5C55".concat(e, " \u5FC5\u987B\u5148\u6CE8\u518C"));case 3:_context30.next = 5;return n.invoke(t, this);case 5:return _context30.abrupt("return", _context30.sent);case 6:case "end":return _context30.stop();}}}, _callee30, this);}));function invokeExtension(_x28, _x29) {return _invokeExtension.apply(this, arguments);}return invokeExtension;}() }, { key: "useAdapters", value: function useAdapters(e) {var _ref11 = M(e) || {},t = _ref11.adapter,n = _ref11.runtime;t && (j.adapter = t), n && (j.runtime = n);} }]);return Ce;}();var Ue = new Ce();function xe(e, t, n) {void 0 === n && (n = {});var s = /\?/.test(t),r = "";for (var o in n) {"" === r ? !s && (t += "?") : r += "&", r += o + "=" + encodeURIComponent(n[o]);}return /^http(s)?:\/\//.test(t += r) ? t : "" + e + t;}var De = /*#__PURE__*/function () {function De() {_classCallCheck(this, De);}_createClass(De, [{ key: "post", value: function post(e) {var t = e.url,n = e.data,s = e.headers;return new Promise(function (e, r) {E.request({ url: xe("https:", t), data: n, method: "POST", header: s, success: function success(t) {e(t);}, fail: function fail(e) {r(e);} });});} }, { key: "upload", value: function upload(e) {return new Promise(function (t, n) {var s = e.url,r = e.file,o = e.data,i = e.headers,a = e.fileType,c = E.uploadFile({ url: xe("https:", s), name: "file", formData: Object.assign({}, o), filePath: r, fileType: a, header: i, success: function success(e) {var n = { statusCode: e.statusCode, data: e.data || {} };200 === e.statusCode && o.success_action_status && (n.statusCode = parseInt(o.success_action_status, 10)), t(n);}, fail: function fail(e) {u && "mp-alipay" === h && console.warn("支付宝小程序开发工具上传腾讯云时无法准确判断是否上传成功，请使用真机测试"), n(new Error(e.errMsg || "uploadFile:fail"));} });"function" == typeof e.onUploadProgress && c && "function" == typeof c.onProgressUpdate && c.onProgressUpdate(function (t) {e.onUploadProgress({ loaded: t.totalBytesSent, total: t.totalBytesExpectedToSend });});});} }]);return De;}();var Re = { setItem: function setItem(e, t) {E.setStorageSync(e, t);}, getItem: function getItem(e) {return E.getStorageSync(e);}, removeItem: function removeItem(e) {E.removeStorageSync(e);}, clear: function clear() {E.clearStorageSync();} };var qe = { genAdapter: function genAdapter() {return { root: {}, reqClass: De, localStorage: Re, primaryStorage: "local" };}, isMatch: function isMatch() {return !0;}, runtime: "uni_app" };Ue.useAdapters(qe);var Le = Ue,Fe = Le.init;Le.init = function (e) {e.env = e.spaceId;var t = Fe.call(this, e);t.config.provider = "tencent", t.config.spaceId = e.spaceId;var n = t.auth;return t.auth = function (e) {var t = n.call(this, e);return ["linkAndRetrieveDataWithTicket", "signInAnonymously", "signOut", "getAccessToken", "getLoginState", "signInWithTicket", "getUserInfo"].forEach(function (e) {t[e] = T(t[e]).bind(t);}), t;}, t.customAuth = t.auth, t;};var Ne = Le;function $e() {return { token: E.getStorageSync("uni_id_token") || E.getStorageSync("uniIdToken"), tokenExpired: E.getStorageSync("uni_id_token_expired") };}function Me() {if (!u || "h5" !== h) return;uni.getStorageSync("__LAST_DCLOUD_APPID") !== p && (uni.setStorageSync("__LAST_DCLOUD_APPID", p), console.warn("检测到当前项目与上次运行到此端口的项目不一致，自动清理uni-id保存的token信息（仅开发调试时生效）"), E.removeStorageSync("uni_id_token"), E.removeStorageSync("uniIdToken"), E.removeStorageSync("uni_id_token_expired"));}var je = /*#__PURE__*/function (_U) {_inherits(je, _U);var _super9 = _createSuper(je);function je() {_classCallCheck(this, je);return _super9.apply(this, arguments);}_createClass(je, [{ key: "getAccessToken", value: function getAccessToken() {var _this13 = this;return new Promise(function (e, t) {var n = "Anonymous_Access_token";_this13.setAccessToken(n), e(n);});} }, { key: "setupRequest", value: function setupRequest(e, t) {var n = Object.assign({}, e, { spaceId: this.config.spaceId, timestamp: Date.now() }),s = { "Content-Type": "application/json" };"auth" !== t && (n.token = this.accessToken, s["x-basement-token"] = this.accessToken), s["x-serverless-sign"] = b.sign(n, this.config.clientSecret);var r = I();s["x-client-info"] = JSON.stringify(r);var _$e = $e(),o = _$e.token;return s["x-client-token"] = o, { url: this.config.requestUrl, method: "POST", data: n, dataType: "json", header: JSON.parse(JSON.stringify(s)) };} }, { key: "uploadFileToOSS", value: function uploadFileToOSS(_ref12) {var _this14 = this;var e = _ref12.url,t = _ref12.formData,n = _ref12.name,s = _ref12.filePath,r = _ref12.fileType,o = _ref12.onUploadProgress;return new Promise(function (i, a) {var c = _this14.adapter.uploadFile({ url: e, formData: t, name: n, filePath: s, fileType: r, success: function success(e) {e && e.statusCode < 400 ? i(e) : a(new A({ code: "UPLOAD_FAILED", message: "文件上传失败" }));}, fail: function fail(e) {a(new A({ code: e.code || "UPLOAD_FAILED", message: e.message || e.errMsg || "文件上传失败" }));} });"function" == typeof o && c && "function" == typeof c.onProgressUpdate && c.onProgressUpdate(function (e) {o({ loaded: e.totalBytesSent, total: e.totalBytesExpectedToSend });});});} }, { key: "uploadFile", value: function uploadFile(_ref13) {var _this15 = this;var e = _ref13.filePath,t = _ref13.cloudPath,_ref13$fileType = _ref13.fileType,n = _ref13$fileType === void 0 ? "image" : _ref13$fileType,s = _ref13.onUploadProgress;if (!t) throw new A({ code: "CLOUDPATH_REQUIRED", message: "cloudPath不可为空" });var r;return this.getOSSUploadOptionsFromPath({ cloudPath: t }).then(function (t) {var _t$result = t.result,o = _t$result.url,i = _t$result.formData,a = _t$result.name;r = t.result.fileUrl;var c = { url: o, formData: i, name: a, filePath: e, fileType: n };return _this15.uploadFileToOSS(Object.assign({}, c, { onUploadProgress: s }));}).then(function () {return _this15.reportOSSUpload({ cloudPath: t });}).then(function (t) {return new Promise(function (n, s) {t.success ? n({ success: !0, filePath: e, fileID: r }) : s(new A({ code: "UPLOAD_FAILED", message: "文件上传失败" }));});});} }, { key: "deleteFile", value: function deleteFile(_ref14) {var e = _ref14.fileList;var t = { method: "serverless.file.resource.delete", params: JSON.stringify({ fileList: e }) };return this.request(this.setupRequest(t));} }, { key: "getTempFileURL", value: function getTempFileURL() {var _ref15 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},e = _ref15.fileList;var t = { method: "serverless.file.resource.getTempFileURL", params: JSON.stringify({ fileList: e }) };return this.request(this.setupRequest(t));} }]);return je;}(U);var Be = { init: function init(e) {var t = new je(e),n = { signInAnonymously: function signInAnonymously() {return t.authorize();}, getLoginState: function getLoginState() {return Promise.resolve(!1);} };return t.auth = function () {return n;}, t.customAuth = t.auth, t;} };function Ke(_ref16) {var e = _ref16.data;var t;t = I();var n = JSON.parse(JSON.stringify(e || {}));if (Object.assign(n, { clientInfo: t }), !n.uniIdToken) {var _$e2 = $e(),_e16 = _$e2.token;_e16 && (n.uniIdToken = _e16);}return n;}function He(_ref17) {var _this16 = this;var e = _ref17.name,t = _ref17.data;var n = this.localAddress,s = this.localPort,r = { aliyun: "aliyun", tencent: "tcb" }[this.config.provider],o = this.config.spaceId,i = "http://".concat(n, ":").concat(s, "/system/check-function"),a = "http://".concat(n, ":").concat(s, "/cloudfunctions/").concat(e);return new Promise(function (t, n) {E.request({ method: "POST", url: i, data: { name: e, platform: h, provider: r, spaceId: o }, timeout: 3e3, success: function success(e) {t(e);}, fail: function fail() {t({ data: { code: "NETWORK_ERROR", message: "连接本地调试服务失败，请检查客户端是否和主机在同一局域网下，自动切换为已部署的云函数。" } });} });}).then(function () {var _ref18 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},e = _ref18.data;var _ref19 = e || {},t = _ref19.code,n = _ref19.message;return { code: 0 === t ? 0 : t || "SYS_ERR", message: n || "SYS_ERR" };}).then(function (_ref20) {var n = _ref20.code,s = _ref20.message;if (0 !== n) {switch (n) {case "MODULE_ENCRYPTED":console.error("\u6B64\u4E91\u51FD\u6570\uFF08".concat(e, "\uFF09\u4F9D\u8D56\u52A0\u5BC6\u516C\u5171\u6A21\u5757\u4E0D\u53EF\u672C\u5730\u8C03\u8BD5\uFF0C\u81EA\u52A8\u5207\u6362\u4E3A\u4E91\u7AEF\u5DF2\u90E8\u7F72\u7684\u4E91\u51FD\u6570"));break;case "FUNCTION_ENCRYPTED":console.error("\u6B64\u4E91\u51FD\u6570\uFF08".concat(e, "\uFF09\u5DF2\u52A0\u5BC6\u4E0D\u53EF\u672C\u5730\u8C03\u8BD5\uFF0C\u81EA\u52A8\u5207\u6362\u4E3A\u4E91\u7AEF\u5DF2\u90E8\u7F72\u7684\u4E91\u51FD\u6570"));break;case "ACTION_ENCRYPTED":console.error(s || "需要访问加密的uni-clientDB-action，自动切换为云端环境");break;case "NETWORK_ERROR":{var _e17 = "连接本地调试服务失败，请检查客户端是否和主机在同一局域网下";throw console.error(_e17), new Error(_e17);}case "SWITCH_TO_CLOUD":break;default:{var _e18 = "\u68C0\u6D4B\u672C\u5730\u8C03\u8BD5\u670D\u52A1\u51FA\u73B0\u9519\u8BEF\uFF1A".concat(s, "\uFF0C\u8BF7\u68C0\u67E5\u7F51\u7EDC\u73AF\u5883\u6216\u91CD\u542F\u5BA2\u6237\u7AEF\u518D\u8BD5");throw console.error(_e18), new Error(_e18);}}return _this16._originCallFunction({ name: e, data: t });}return new Promise(function (e, n) {var s = Ke.call(_this16, { data: t });E.request({ method: "POST", url: a, data: { provider: r, platform: h, param: s }, success: function success() {var _ref21 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},t = _ref21.statusCode,s = _ref21.data;return !t || t >= 400 ? n(new A({ code: s.code || "SYS_ERR", message: s.message || "request:fail" })) : e({ result: s });}, fail: function fail(e) {n(new A({ code: e.code || e.errCode || "SYS_ERR", message: e.message || e.errMsg || "request:fail" }));} });});});}var We = [{ rule: /fc_function_not_found|FUNCTION_NOT_FOUND/, content: "，云函数[{functionName}]在云端不存在，请检查此云函数名称是否正确以及该云函数是否已上传到服务空间", mode: "append" }];var ze = /[\\^$.*+?()[\]{}|]/g,Je = RegExp(ze.source);function Ve(e, t, n) {return e.replace(new RegExp((s = t) && Je.test(s) ? s.replace(ze, "\\$&") : s, "g"), n);var s;}function Ye(_ref22) {var e = _ref22.functionName,t = _ref22.result,n = _ref22.logPvd;if (this.config.useDebugFunction && t && t.requestId) {var _s7 = JSON.stringify({ spaceId: this.config.spaceId, functionName: e, requestId: t.requestId });console.log("[".concat(n, "-request]").concat(_s7, "[/").concat(n, "-request]"));}}function Xe(e) {var t = e.callFunction,n = function n(_n4) {var _this17 = this;var s = _n4.name;_n4.data = Ke.call(e, { data: _n4.data });var r = { aliyun: "aliyun", tencent: "tcb" }[this.config.provider];return t.call(this, _n4).then(function (e) {return Ye.call(_this17, { functionName: s, result: e, logPvd: r }), Promise.resolve(e);}, function (e) {return Ye.call(_this17, { functionName: s, result: e, logPvd: r }), e && e.message && (e.message = function () {var _ref23 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},_ref23$message = _ref23.message,e = _ref23$message === void 0 ? "" : _ref23$message,_ref23$extraInfo = _ref23.extraInfo,t = _ref23$extraInfo === void 0 ? {} : _ref23$extraInfo,_ref23$formatter = _ref23.formatter,n = _ref23$formatter === void 0 ? [] : _ref23$formatter;for (var _s8 = 0; _s8 < n.length; _s8++) {var _n$_s = n[_s8],_r3 = _n$_s.rule,_o2 = _n$_s.content,i = _n$_s.mode,_a = e.match(_r3);if (!_a) continue;var _c = _o2;for (var _e19 = 1; _e19 < _a.length; _e19++) {_c = Ve(_c, "{$".concat(_e19, "}"), _a[_e19]);}for (var _e20 in t) {_c = Ve(_c, "{".concat(_e20, "}"), t[_e20]);}return "replace" === i ? _c : e + _c;}return e;}({ message: "[".concat(_n4.name, "]: ").concat(e.message), formatter: We, extraInfo: { functionName: s } })), Promise.reject(e);});};e.callFunction = function (t) {var s;return u && e.debugInfo && !e.debugInfo.forceRemote && d ? (e._originCallFunction || (e._originCallFunction = n), s = He.call(this, t)) : s = n.call(this, t), Object.defineProperty(s, "result", { get: function get() {return console.warn("当前返回结果为Promise类型，不可直接访问其result属性，详情请参考：https://uniapp.dcloud.net.cn/uniCloud/faq?id=promise"), {};} }), s;};}var Ge = Symbol("CLIENT_DB_INTERNAL");function Qe(e, t) {return e.then = "DoNotReturnProxyWithAFunctionNamedThen", e._internalType = Ge, e.__ob__ = void 0, new Proxy(e, { get: function get(e, n, s) {if ("_uniClient" === n) return null;if (n in e || "string" != typeof n) {var _t9 = e[n];return "function" == typeof _t9 ? _t9.bind(e) : _t9;}return t.get(e, n, s);} });}function Ze(e) {return { on: function on(t, n) {e[t] = e[t] || [], e[t].indexOf(n) > -1 || e[t].push(n);}, off: function off(t, n) {e[t] = e[t] || [];var s = e[t].indexOf(n);-1 !== s && e[t].splice(s, 1);} };}var et = ["db.Geo", "db.command", "command.aggregate"];function tt(e, t) {return et.indexOf("".concat(e, ".").concat(t)) > -1;}function nt(e) {switch (o(e)) {case "array":return e.map(function (e) {return nt(e);});case "object":return e._internalType === Ge || Object.keys(e).forEach(function (t) {e[t] = nt(e[t]);}), e;case "regexp":return { $regexp: { source: e.source, flags: e.flags } };case "date":return { $date: e.toISOString() };default:return e;}}var st = /*#__PURE__*/function () {function st(e, t, n) {_classCallCheck(this, st);this.content = e, this.prevStage = t || null, this.udb = null, this._database = n;}_createClass(st, [{ key: "toJSON", value: function toJSON() {var e = this;var t = [e.content];for (; e.prevStage;) {e = e.prevStage, t.push(e.content);}return { $db: t.reverse().map(function (e) {return { $method: e.$method, $param: nt(e.$param) };}) };} }, { key: "getAction", value: function getAction() {var e = this.toJSON().$db.find(function (e) {return "action" === e.$method;});return e && e.$param && e.$param[0];} }, { key: "getCommand", value: function getCommand() {return { $db: this.toJSON().$db.filter(function (e) {return "action" !== e.$method;}) };} }, { key: "get", value: function get() {return this._send("get", Array.from(arguments));} }, { key: "add", value: function add() {return this._send("add", Array.from(arguments));} }, { key: "remove", value: function remove() {return this._send("remove", Array.from(arguments));} }, { key: "update", value: function update() {return this._send("update", Array.from(arguments));} }, { key: "end", value: function end() {return this._send("end", Array.from(arguments));} }, { key: "set", value: function set() {throw new Error("clientDB禁止使用set方法");} }, { key: "_send", value: function _send(e, t) {var n = this.getAction(),s = this.getCommand();if (s.$db.push({ $method: e, $param: nt(t) }), u) {var _e21 = s.$db.find(function (e) {return "collection" === e.$method;}),_t10 = _e21 && _e21.$param;_t10 && 1 === _t10.length && "string" == typeof _e21.$param[0] && _e21.$param[0].indexOf(",") > -1 && console.warn("检测到使用JQL语法联表查询时，未使用getTemp先过滤主表数据，在主表数据量大的情况下可能会查询缓慢。\n- 如何优化请参考此文档：https://uniapp.dcloud.net.cn/uniCloud/jql?id=lookup-with-temp \n- 如果主表数据量很小请忽略此信息，项目发行时不会出现此提示。");}return this._database._callCloudFunction({ action: n, command: s });} }, { key: "useAggregate", get: function get() {var e = this,t = !1;for (; e.prevStage;) {e = e.prevStage;var _n5 = e.content.$method;if ("aggregate" === _n5 || "pipeline" === _n5) {t = !0;break;}}return t;} }, { key: "count", get: function get() {if (!this.useAggregate) return function () {return this._send("count", Array.from(arguments));};var e = this;return function () {return rt({ $method: "count", $param: nt(Array.from(arguments)) }, e, this._database);};} }]);return st;}();function rt(e, t, n) {return Qe(new st(e, t, n), { get: function get(e, t) {var s = "db";return e && e.content && (s = e.content.$method), tt(s, t) ? rt({ $method: t }, e, n) : function () {return rt({ $method: t, $param: nt(Array.from(arguments)) }, e, n);};} });}function ot(_ref24) {var e = _ref24.path,t = _ref24.method;return /*#__PURE__*/function () {function _class2() {_classCallCheck(this, _class2);this.param = Array.from(arguments);}_createClass(_class2, [{ key: "toJSON", value: function toJSON() {return { $newDb: [].concat(_toConsumableArray(e.map(function (e) {return { $method: e };})), [{ $method: t, $param: this.param }]) };} }]);return _class2;}();}var it = /*#__PURE__*/function (_ref25) {_inherits(it, _ref25);var _super10 = _createSuper(it);function it() {_classCallCheck(this, it);return _super10.apply(this, arguments);}_createClass(it, [{ key: "_callCloudFunction", value: function _callCloudFunction(_ref26) {var _this18 = this;var e = _ref26.action,t = _ref26.command,n = _ref26.multiCommand,s = _ref26.queryList;function r(e, t) {if (n && s) for (var _n6 = 0; _n6 < s.length; _n6++) {var _r4 = s[_n6];_r4.udb && "function" == typeof _r4.udb.setResult && (t ? _r4.udb.setResult(t) : _r4.udb.setResult(e.result.dataList[_n6]));}}var o = S(v("database", "invoke")),i = this._uniClient;return o.then(function () {return i.callFunction({ name: "DCloud-clientDB", data: { action: e, command: t, multiCommand: n } });}).then(function (e) {var _e$result = e.result,t = _e$result.code,n = _e$result.message,s = _e$result.token,o = _e$result.tokenExpired,_e$result$systemInfo = _e$result.systemInfo,i = _e$result$systemInfo === void 0 ? [] : _e$result$systemInfo;if (i) for (var _e22 = 0; _e22 < i.length; _e22++) {var _i$_e = i[_e22],_t11 = _i$_e.level,_n7 = _i$_e.message,_s9 = _i$_e.detail,_r5 = console["app-plus" === h && "warn" === _t11 ? "error" : _t11] || console.log;var _o3 = "[System Info]" + _n7;_s9 && (_o3 = "".concat(_o3, "\n\u8BE6\u7EC6\u4FE1\u606F\uFF1A").concat(_s9)), _r5(_o3);}if (t) {var _e23 = new a(n, t);return _this18._callback("error", [_e23]), Promise.reject(_e23);}s && o && (!function () {var _ref27 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},e = _ref27.token,t = _ref27.tokenExpired;e && E.setStorageSync("uni_id_token", e), t && E.setStorageSync("uni_id_token_expired", t);}({ token: s, tokenExpired: o }), _this18._callbackAuth("refreshToken", [{ token: s, tokenExpired: o }]), _this18._callback("refreshToken", [{ token: s, tokenExpired: o }]));var c = e.result.affectedDocs;return "number" == typeof c && Object.defineProperty(e.result, "affectedDocs", { get: function get() {return console.warn("affectedDocs不再推荐使用，请使用inserted/deleted/updated/data.length替代"), c;} }), S(v("database", "success"), e).then(function () {return S(v("database", "complete"), e);}).then(function () {return r(e, null), Promise.resolve(e);});}, function (e) {var t = new a(e.message, e.code || "SYSTEM_ERROR");return _this18._callback("error", [t]), /fc_function_not_found|FUNCTION_NOT_FOUND/g.test(e.message) && console.warn("clientDB未初始化，请在web控制台保存一次schema以开启clientDB"), S(v("database", "fail"), e).then(function () {return S(v("database", "complete"), e);}).then(function () {return r(null, e), Promise.reject(e);});});} }]);return it;}( /*#__PURE__*/function () {function _class3() {var _ref28 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},_ref28$uniClient = _ref28.uniClient,e = _ref28$uniClient === void 0 ? {} : _ref28$uniClient;_classCallCheck(this, _class3);this._uniClient = e, this._authCallBacks = {}, this._dbCallBacks = {}, e.isDefault && (this._dbCallBacks = m("_globalUniCloudDatabaseCallback")), this.auth = Ze(this._authCallBacks), Object.assign(this, Ze(this._dbCallBacks)), this.env = Qe({}, { get: function get(e, t) {return { $env: t };} }), this.Geo = Qe({}, { get: function get(e, t) {return ot({ path: ["Geo"], method: t });} }), this.serverDate = ot({ path: [], method: "serverDate" }), this.RegExp = ot({ path: [], method: "RegExp" });}_createClass(_class3, [{ key: "getCloudEnv", value: function getCloudEnv(e) {if ("string" != typeof e || !e.trim()) throw new Error("getCloudEnv参数错误");return { $env: e.replace("$cloudEnv_", "") };} }, { key: "_callback", value: function _callback(e, t) {var n = this._dbCallBacks;n[e] && n[e].forEach(function (e) {e.apply(void 0, _toConsumableArray(t));});} }, { key: "_callbackAuth", value: function _callbackAuth(e, t) {var n = this._authCallBacks;n[e] && n[e].forEach(function (e) {e.apply(void 0, _toConsumableArray(t));});} }, { key: "multiSend", value: function multiSend() {var e = Array.from(arguments),t = e.map(function (e) {var t = e.getAction(),n = e.getCommand();if ("getTemp" !== n.$db[n.$db.length - 1].$method) throw new Error("multiSend只支持子命令内使用getTemp");return { action: t, command: n };});return this._callCloudFunction({ multiCommand: t, queryList: e });} }]);return _class3;}());function at(e) {e.database = function (t) {if (t && Object.keys(t).length > 0) return e.init(t).database();if (this._database) return this._database;var n = function (e) {var t = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};return Qe(new e(t), { get: function get(e, t) {return tt("db", t) ? rt({ $method: t }, null, e) : function () {return rt({ $method: t, $param: nt(Array.from(arguments)) }, null, e);};} });}(it, { uniClient: e });return this._database = n, n;};}var ct;var ut = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",ht = /^(?:[A-Za-z\d+/]{4})*?(?:[A-Za-z\d+/]{2}(?:==)?|[A-Za-z\d+/]{3}=?)?$/;function lt() {var e = $e().token || "",t = e.split(".");if (!e || 3 !== t.length) return { uid: null, role: [], permission: [], tokenExpired: 0 };var n;try {n = JSON.parse((s = t[1], decodeURIComponent(ct(s).split("").map(function (e) {return "%" + ("00" + e.charCodeAt(0).toString(16)).slice(-2);}).join(""))));} catch (e) {throw new Error("获取当前用户信息出错，详细错误信息为：" + e.message);}var s;return n.tokenExpired = 1e3 * n.exp, delete n.exp, delete n.iat, n;}ct = "function" != typeof atob ? function (e) {if (e = String(e).replace(/[\t\n\f\r ]+/g, ""), !ht.test(e)) throw new Error("Failed to execute 'atob' on 'Window': The string to be decoded is not correctly encoded.");var t;e += "==".slice(2 - (3 & e.length));for (var n, s, r = "", o = 0; o < e.length;) {t = ut.indexOf(e.charAt(o++)) << 18 | ut.indexOf(e.charAt(o++)) << 12 | (n = ut.indexOf(e.charAt(o++))) << 6 | (s = ut.indexOf(e.charAt(o++))), r += 64 === n ? String.fromCharCode(t >> 16 & 255) : 64 === s ? String.fromCharCode(t >> 16 & 255, t >> 8 & 255) : String.fromCharCode(t >> 16 & 255, t >> 8 & 255, 255 & t);}return r;} : atob;var dt = t(n(function (e, t) {Object.defineProperty(t, "__esModule", { value: !0 });var n = "chooseAndUploadFile:ok",s = "chooseAndUploadFile:fail";function r(e, t) {return e.tempFiles.forEach(function (e, n) {e.name || (e.name = e.path.substring(e.path.lastIndexOf("/") + 1)), t && (e.fileType = t), e.cloudPath = Date.now() + "_" + n + e.name.substring(e.name.lastIndexOf("."));}), e.tempFilePaths || (e.tempFilePaths = e.tempFiles.map(function (e) {return e.path;})), e;}function o(e, t, _ref29) {var s = _ref29.onChooseFile,r = _ref29.onUploadProgress;return t.then(function (e) {if (s) {var _t12 = s(e);if (void 0 !== _t12) return Promise.resolve(_t12).then(function (t) {return void 0 === t ? e : t;});}return e;}).then(function (t) {return !1 === t ? { errMsg: n, tempFilePaths: [], tempFiles: [] } : function (e, t) {var s = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5;var r = arguments.length > 3 ? arguments[3] : undefined;(t = Object.assign({}, t)).errMsg = n;var o = t.tempFiles,i = o.length;var a = 0;return new Promise(function (n) {for (; a < s;) {c();}function c() {var s = a++;if (s >= i) return void (!o.find(function (e) {return !e.url && !e.errMsg;}) && n(t));var u = o[s];e.uploadFile({ filePath: u.path, cloudPath: u.cloudPath, fileType: u.fileType, onUploadProgress: function onUploadProgress(e) {e.index = s, e.tempFile = u, e.tempFilePath = u.path, r && r(e);} }).then(function (e) {u.url = e.fileID, s < i && c();}).catch(function (e) {u.errMsg = e.errMsg || e.message, s < i && c();});}});}(e, t, 5, r);});}t.initChooseAndUploadFile = function (e) {return function () {var t = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { type: "all" };return "image" === t.type ? o(e, function (e) {var t = e.count,n = e.sizeType,_e$sourceType = e.sourceType,o = _e$sourceType === void 0 ? ["album", "camera"] : _e$sourceType,i = e.extension;return new Promise(function (e, a) {uni.chooseImage({ count: t, sizeType: n, sourceType: o, extension: i, success: function success(t) {e(r(t, "image"));}, fail: function fail(e) {a({ errMsg: e.errMsg.replace("chooseImage:fail", s) });} });});}(t), t) : "video" === t.type ? o(e, function (e) {var t = e.camera,n = e.compressed,o = e.maxDuration,_e$sourceType2 = e.sourceType,i = _e$sourceType2 === void 0 ? ["album", "camera"] : _e$sourceType2,a = e.extension;return new Promise(function (e, c) {uni.chooseVideo({ camera: t, compressed: n, maxDuration: o, sourceType: i, extension: a, success: function success(t) {var n = t.tempFilePath,s = t.duration,o = t.size,i = t.height,a = t.width;e(r({ errMsg: "chooseVideo:ok", tempFilePaths: [n], tempFiles: [{ name: t.tempFile && t.tempFile.name || "", path: n, size: o, type: t.tempFile && t.tempFile.type || "", width: a, height: i, duration: s, fileType: "video", cloudPath: "" }] }, "video"));}, fail: function fail(e) {c({ errMsg: e.errMsg.replace("chooseVideo:fail", s) });} });});}(t), t) : o(e, function (e) {var t = e.count,n = e.extension;return new Promise(function (e, o) {var i = uni.chooseFile;if ("undefined" != typeof wx && "function" == typeof wx.chooseMessageFile && (i = wx.chooseMessageFile), "function" != typeof i) return o({ errMsg: s + " 请指定 type 类型，该平台仅支持选择 image 或 video。" });i({ type: "all", count: t, extension: n, success: function success(t) {e(r(t));}, fail: function fail(e) {o({ errMsg: e.errMsg.replace("chooseFile:fail", s) });} });});}(t), t);};};}));var ft = "manual";function pt(e) {return { props: { localdata: { type: Array, default: function _default() {return [];} }, options: { type: [Object, Array], default: function _default() {return {};} }, spaceInfo: { type: Object, default: function _default() {return {};} }, collection: { type: [String, Array], default: "" }, action: { type: String, default: "" }, field: { type: String, default: "" }, orderby: { type: String, default: "" }, where: { type: [String, Object], default: "" }, pageData: { type: String, default: "add" }, pageCurrent: { type: Number, default: 1 }, pageSize: { type: Number, default: 20 }, getcount: { type: [Boolean, String], default: !1 }, gettree: { type: [Boolean, String], default: !1 }, gettreepath: { type: [Boolean, String], default: !1 }, startwith: { type: String, default: "" }, limitlevel: { type: Number, default: 10 }, groupby: { type: String, default: "" }, groupField: { type: String, default: "" }, distinct: { type: [Boolean, String], default: !1 }, foreignKey: { type: String, default: "" }, loadtime: { type: String, default: "auto" }, manual: { type: Boolean, default: !1 } }, data: function data() {return { mixinDatacomLoading: !1, mixinDatacomHasMore: !1, mixinDatacomResData: [], mixinDatacomErrorMessage: "", mixinDatacomPage: {} };}, created: function created() {var _this19 = this;this.mixinDatacomPage = { current: this.pageCurrent, size: this.pageSize, count: 0 }, this.$watch(function () {var e = [];return ["pageCurrent", "pageSize", "localdata", "collection", "action", "field", "orderby", "where", "getont", "getcount", "gettree", "groupby", "groupField", "distinct"].forEach(function (t) {e.push(_this19[t]);}), e;}, function (e, t) {if (_this19.loadtime === ft) return;var n = !1;var s = [];for (var _r6 = 2; _r6 < e.length; _r6++) {e[_r6] !== t[_r6] && (s.push(e[_r6]), n = !0);}e[0] !== t[0] && (_this19.mixinDatacomPage.current = _this19.pageCurrent), _this19.mixinDatacomPage.size = _this19.pageSize, _this19.onMixinDatacomPropsChange(n, s);});}, methods: { onMixinDatacomPropsChange: function onMixinDatacomPropsChange(e, t) {}, mixinDatacomEasyGet: function mixinDatacomEasyGet() {var _this20 = this;var _ref30 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},_ref30$getone = _ref30.getone,e = _ref30$getone === void 0 ? !1 : _ref30$getone,t = _ref30.success,n = _ref30.fail;this.mixinDatacomLoading || (this.mixinDatacomLoading = !0, this.mixinDatacomErrorMessage = "", this.mixinDatacomGet().then(function (n) {_this20.mixinDatacomLoading = !1;var _n$result = n.result,s = _n$result.data,r = _n$result.count;_this20.getcount && (_this20.mixinDatacomPage.count = r), _this20.mixinDatacomHasMore = s.length < _this20.pageSize;var o = e ? s.length ? s[0] : void 0 : s;_this20.mixinDatacomResData = o, t && t(o);}).catch(function (e) {_this20.mixinDatacomLoading = !1, _this20.mixinDatacomErrorMessage = e, n && n(e);}));}, mixinDatacomGet: function mixinDatacomGet() {var _n8;var t = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};var n = e.database(this.spaceInfo);var s = t.action || this.action;s && (n = n.action(s));var r = t.collection || this.collection;n = Array.isArray(r) ? (_n8 = n).collection.apply(_n8, _toConsumableArray(r)) : n.collection(r);var o = t.where || this.where;o && Object.keys(o).length && (n = n.where(o));var i = t.field || this.field;i && (n = n.field(i));var a = t.foreignKey || this.foreignKey;a && (n = n.foreignKey(a));var c = t.groupby || this.groupby;c && (n = n.groupBy(c));var u = t.groupField || this.groupField;u && (n = n.groupField(u));!0 === (void 0 !== t.distinct ? t.distinct : this.distinct) && (n = n.distinct());var h = t.orderby || this.orderby;h && (n = n.orderBy(h));var l = void 0 !== t.pageCurrent ? t.pageCurrent : this.mixinDatacomPage.current,d = void 0 !== t.pageSize ? t.pageSize : this.mixinDatacomPage.size,f = void 0 !== t.getcount ? t.getcount : this.getcount,p = void 0 !== t.gettree ? t.gettree : this.gettree,g = void 0 !== t.gettreepath ? t.gettreepath : this.gettreepath,m = { getCount: f },y = { limitLevel: void 0 !== t.limitlevel ? t.limitlevel : this.limitlevel, startWith: void 0 !== t.startwith ? t.startwith : this.startwith };return p && (m.getTree = y), g && (m.getTreePath = y), n = n.skip(d * (l - 1)).limit(d).get(m), n;} } };}function gt(_x30, _x31) {return _gt.apply(this, arguments);}function _gt() {_gt = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee32(e, t) {var n, _e26, s;return _regenerator.default.wrap(function _callee32$(_context32) {while (1) {switch (_context32.prev = _context32.next) {case 0:n = "http://".concat(e, ":").concat(t, "/system/ping");_context32.prev = 1;_context32.next = 4;return s = { url: n, timeout: 500 }, new Promise(function (e, t) {E.request(_objectSpread(_objectSpread({}, s), {}, { success: function success(t) {e(t);}, fail: function fail(e) {t(e);} }));});case 4:_e26 = _context32.sent;return _context32.abrupt("return", !(!_e26.data || 0 !== _e26.data.code));case 8:_context32.prev = 8;_context32.t0 = _context32["catch"](1);return _context32.abrupt("return", !1);case 11:case "end":return _context32.stop();}}}, _callee32, null, [[1, 8]]);}));return _gt.apply(this, arguments);}function mt(e) {if (e.initUniCloudStatus && "rejected" !== e.initUniCloudStatus) return;var t = Promise.resolve();var n;n = 1, t = new Promise(function (e, t) {setTimeout(function () {e();}, n);}), e.isReady = !1, e.isDefault = !1;var s = e.auth();e.initUniCloudStatus = "pending", e.initUniCloud = t.then(function () {return s.getLoginState();}).then(function (e) {return e ? Promise.resolve() : s.signInAnonymously();}).then(function () {if (!u) return Promise.resolve();if (u && e.debugInfo) {var _e$debugInfo = e.debugInfo,_t13 = _e$debugInfo.address,_n9 = _e$debugInfo.servePort;return function () {var _ref31 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee31(e, t) {var n, _s10, _r7;return _regenerator.default.wrap(function _callee31$(_context31) {while (1) {switch (_context31.prev = _context31.next) {case 0:_s10 = 0;case 1:if (!(_s10 < e.length)) {_context31.next = 11;break;}_r7 = e[_s10];_context31.next = 5;return gt(_r7, t);case 5:if (!_context31.sent) {_context31.next = 8;break;}n = _r7;return _context31.abrupt("break", 11);case 8:_s10++;_context31.next = 1;break;case 11:return _context31.abrupt("return", { address: n, port: t });case 12:case "end":return _context31.stop();}}}, _callee31);}));return function (_x32, _x33) {return _ref31.apply(this, arguments);};}()(_t13, _n9);}}).then(function () {var _ref32 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},t = _ref32.address,n = _ref32.port;if (!u) return Promise.resolve();if (t) e.localAddress = t, e.localPort = n;else if (e.debugInfo) {var _t14 = console["app-plus" === h ? "error" : "warn"];var _n10 = "";"remote" === e.debugInfo.initialLaunchType ? (e.debugInfo.forceRemote = !0, _n10 = "当前客户端和HBuilderX不在同一局域网下（或其他网络原因无法连接HBuilderX），uniCloud本地调试服务不对当前客户端生效。\n- 如果不使用uniCloud本地调试服务，请直接忽略此信息。\n- 如需使用uniCloud本地调试服务，请将客户端与主机连接到同一局域网下并重新运行到客户端。\n- 如果在HBuilderX开启的状态下切换过网络环境，请重启HBuilderX后再试\n- 检查系统防火墙是否拦截了HBuilderX自带的nodejs") : _n10 = "无法连接uniCloud本地调试服务，请检查当前客户端是否与主机在同一局域网下。\n- 如需使用uniCloud本地调试服务，请将客户端与主机连接到同一局域网下并重新运行到客户端。\n- 如果在HBuilderX开启的状态下切换过网络环境，请重启HBuilderX后再试\n- 检查系统防火墙是否拦截了HBuilderX自带的nodejs", "h5" === h && (_n10 += "\n- 部分浏览器开启节流模式之后访问本地地址受限，请检查是否启用了节流模式"), _t14(_n10);}}).then(function () {Me(), e.isReady = !0, e.initUniCloudStatus = "fulfilled";}).catch(function (t) {console.error(t), e.initUniCloudStatus = "rejected";});}var yt = new ( /*#__PURE__*/function () {function _class4() {_classCallCheck(this, _class4);}_createClass(_class4, [{ key: "init", value: function init(e) {var t = {};var n = !1 !== e.debugFunction && u && ("h5" === h && navigator.userAgent.indexOf("HBuilderX") > 0 || "app-plus" === h);switch (e.provider) {case "tencent":t = Ne.init(Object.assign(e, { useDebugFunction: n }));break;case "aliyun":t = x.init(Object.assign(e, { useDebugFunction: n }));break;case "private":t = Be.init(Object.assign(e, { useDebugFunction: n }));break;default:throw new Error("未提供正确的provider参数");}var s = l;u && s && !s.code && (t.debugInfo = s), mt(t), t.reInit = function () {mt(this);}, Xe(t), function (e) {var t = e.uploadFile;e.uploadFile = function (e) {return t.call(this, e);};}(t), at(t), function (e) {e.getCurrentUserInfo = lt, e.chooseAndUploadFile = dt.initChooseAndUploadFile(e), Object.assign(e, { get mixinDatacom() {return pt(e);} });}(t);return ["callFunction", "uploadFile", "deleteFile", "getTempFileURL", "downloadFile", "chooseAndUploadFile"].forEach(function (e) {if (!t[e]) return;var n = t[e];t[e] = function () {return t.reInit(), n.apply(t, Array.from(arguments));}, t[e] = T(t[e], e).bind(t);}), t.init = this.init, t;} }]);return _class4;}())();(function () {{var e = d;var t = {};if (1 === e.length) t = e[0], yt = yt.init(t), yt.isDefault = !0;else {var _t15 = ["auth", "callFunction", "uploadFile", "deleteFile", "getTempFileURL", "downloadFile", "database", "getCurrentUSerInfo"];var _n11;_n11 = e && e.length > 0 ? "应用有多个服务空间，请通过uniCloud.init方法指定要使用的服务空间" : f ? "应用未关联服务空间，请在uniCloud目录右键关联服务空间" : "uni-app cli项目内使用uniCloud需要使用HBuilderX的运行菜单运行项目，且需要在uniCloud目录关联服务空间", _t15.forEach(function (e) {yt[e] = function () {return console.error(_n11), Promise.reject(new A({ code: "SYS_ERR", message: _n11 }));};});}Object.assign(yt, { get mixinDatacom() {return pt(yt);} }), yt.addInterceptor = w, yt.removeInterceptor = k, u && "h5" === h && (window.uniCloud = yt);}})();var _t = yt;exports.default = _t;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../webpack/buildin/global.js */ 2), __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+
+/***/ }),
+/* 149 */
+/*!***********************************************************!*\
+  !*** D:/前端开发/uni_app/AXplayer/pages.json?{"type":"stat"} ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _default = { "appid": "__UNI__0C90AAA" };exports.default = _default;
+
+/***/ }),
 /* 150 */,
 /* 151 */,
 /* 152 */,
@@ -19488,8 +19439,110 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADD
 /* 171 */,
 /* 172 */,
 /* 173 */,
-/* 174 */,
-/* 175 */,
+/* 174 */
+/*!*********************************************!*\
+  !*** D:/前端开发/uni_app/AXplayer/utils/api.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });var _request2 = __webpack_require__(/*! ./request.js */ 175);
+
+// 获取电影列表
+function getMovieList(offset) {
+  return (0, _request2._request)("/top/mv", "get", { offset: offset, limit: 10 });
+}
+
+// 获取播放地址
+function getMvAddrById(id) {
+  return (0, _request2._request)("/mv/url", "get", { id: id });
+}
+
+// 获取mv详细信息
+function getMvDetailById(mvid) {
+  return (0, _request2._request)("/mv/detail", "get", { mvid: mvid });
+}
+
+// 获取相关视频
+function getRelatedVideo(id) {
+  return (0, _request2._request)("/related/allvideo", "get", { id: id });
+}
+
+// 获取轮播图数据
+function getBanner() {
+  return (0, _request2._request)("/banner", "get", { type: 2 });
+}
+
+// 获取推荐列表
+function getrecommend(idx) {
+  return (0, _request2._request)("/top/list", "get", { idx: idx });
+}
+// 获取热门歌单
+function getHotList(limit) {
+  return (0, _request2._request)("/top/playlist", "get", { limit: limit });
+}
+// 获取推荐歌单
+function getRemmendList(limit) {
+  return (0, _request2._request)("/top/playlist", "get", { limit: limit, cat: "华语" });
+}
+// 获取歌单详情
+function getSongMeauDetailById(id) {
+  return (0, _request2._request)("/playlist/detail/dynamic", "get", { id: id });
+}
+// 热门搜索
+function getHotSearchTag() {
+  return (0, _request2._request)("/search/hot", "get");
+}
+// 搜索建议
+function getSearchResult(keywords) {
+  return (0, _request2._request)("/search/suggest", "get", { keywords: keywords, type: "mobile" });
+}
+// 搜索结果
+function getSearchContent(keywords) {
+  return (0, _request2._request)("/search", "get", { keywords: keywords });
+}
+// 获取歌曲详细信息
+function getSongDetailInfo(ids) {
+  return (0, _request2._request)("/song/detail", "get", { ids: ids });
+}
+// 获取歌曲歌词
+function getSongLyric(id) {
+  return (0, _request2._request)("/lyric", "get", { id: id });
+}
+
+// search create meau
+function getSeatchMeauo(arr) {
+  return (0, _request2._request)("/song/detail?ids=" + arr.toString(), "get");
+}
+
+/***/ }),
+/* 175 */
+/*!*************************************************!*\
+  !*** D:/前端开发/uni_app/AXplayer/utils/request.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports._request = void 0; // 基地址
+var baseURL = "http://123.207.32.32:9001";
+var _request = function _request(url, method) {var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  return new Promise(function (resolve, reject) {
+    uni.request({
+      url: baseURL + url,
+      method: method,
+      data: params,
+      success: function success(res) {
+        resolve(res.data);
+      },
+      fail: reject });
+
+  });
+};exports._request = _request;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+
+/***/ }),
 /* 176 */,
 /* 177 */,
 /* 178 */,
@@ -19511,7 +19564,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADD
 /* 194 */,
 /* 195 */,
 /* 196 */,
-/* 197 */
+/* 197 */,
+/* 198 */,
+/* 199 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/components/u-search/props.js ***!
   \**********************************************************************************/
@@ -19637,8 +19692,6 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADD
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 198 */,
-/* 199 */,
 /* 200 */,
 /* 201 */,
 /* 202 */,
@@ -19714,7 +19767,9 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADD
 /* 272 */,
 /* 273 */,
 /* 274 */,
-/* 275 */
+/* 275 */,
+/* 276 */,
+/* 277 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/components/u-icon/icons.js ***!
   \********************************************************************************/
@@ -19937,7 +19992,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
   'uicon-en': "\uE692" };exports.default = _default;
 
 /***/ }),
-/* 276 */
+/* 278 */
 /*!********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/components/u-icon/props.js ***!
   \********************************************************************************/
@@ -20034,8 +20089,6 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 277 */,
-/* 278 */,
 /* 279 */,
 /* 280 */,
 /* 281 */,
@@ -20062,7 +20115,9 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 /* 302 */,
 /* 303 */,
 /* 304 */,
-/* 305 */
+/* 305 */,
+/* 306 */,
+/* 307 */
 /*!**********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/components/u-slider/props.js ***!
   \**********************************************************************************/
@@ -20124,14 +20179,14 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 306 */,
-/* 307 */,
 /* 308 */,
 /* 309 */,
 /* 310 */,
 /* 311 */,
 /* 312 */,
-/* 313 */
+/* 313 */,
+/* 314 */,
+/* 315 */
 /*!***********************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/components/u-overlay/props.js ***!
   \***********************************************************************************/
@@ -20163,14 +20218,14 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 314 */,
-/* 315 */,
 /* 316 */,
 /* 317 */,
 /* 318 */,
 /* 319 */,
 /* 320 */,
-/* 321 */
+/* 321 */,
+/* 322 */,
+/* 323 */
 /*!**************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/components/u-transition/props.js ***!
   \**************************************************************************************/
@@ -20202,7 +20257,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
-/* 322 */
+/* 324 */
 /*!*******************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/components/u-transition/transition.js ***!
   \*******************************************************************************************/
@@ -20213,7 +20268,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 13));
 
 
-var _nvueAniMap = _interopRequireDefault(__webpack_require__(/*! ./nvue.ani-map.js */ 323));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};} // 定义一个一定时间后自动成功的promise，让调用nextTick方法处，进入下一个then方法
+var _nvueAniMap = _interopRequireDefault(__webpack_require__(/*! ./nvue.ani-map.js */ 325));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};} // 定义一个一定时间后自动成功的promise，让调用nextTick方法处，进入下一个then方法
 var nextTick = function nextTick() {return new Promise(function (resolve) {return setTimeout(resolve, 1000 / 50);});}; // nvue动画模块实现细节抽离在外部文件
 
 // 定义类名，通过给元素动态切换类名，赋予元素一定的css动画样式
@@ -20365,7 +20420,7 @@ var getClassNames = function getClassNames(name) {return {
     } } };exports.default = _default;
 
 /***/ }),
-/* 323 */
+/* 325 */
 /*!*********************************************************************************************!*\
   !*** D:/前端开发/uni_app/AXplayer/uni_modules/uview-ui/components/u-transition/nvue.ani-map.js ***!
   \*********************************************************************************************/

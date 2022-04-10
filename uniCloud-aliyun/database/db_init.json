@@ -1,0 +1,65 @@
+{
+    "hotSearch": {
+		"data":[
+            {
+                "first": "如果爱忘了",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "再次爱上你",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "中岛美嘉",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "林俊杰",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "孤勇者",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "跑步歌单",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "bigbang",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "Letting Go",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "Kiss Me More",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            },
+            {
+                "first": "最美的瞬间",
+                "second": 1,
+                "third": null,
+                "iconType": 1
+            }
+        ]
+}}
